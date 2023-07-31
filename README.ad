@@ -1,0 +1,9 @@
+=  Golang Service Framework: with ONDC specific components
+
+*NOTE* : `bc` is extracted from `qz` as a light weight stand alone component.
+
+**TODO** : remove `blockchain` and `cas` from `qz`.
+
+
+
+

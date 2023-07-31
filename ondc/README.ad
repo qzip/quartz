@@ -1,0 +1,30 @@
+= ONDC Server Framework
+
+A generic server framework in golang, with https://ondc.org[ONDC] specific customizations.
+
+The developer can customize the server using embedded https://pkg.go.dev/github.com/dop251/goja[JavaScript VM], which is an ECMAScript 5.1(+) implementation in Go.
+
+.Features
+. Configurable Components Architecture
+. Embedded Java Script (JS) Engine
+. Built-in Let's Encrypt free SSL.
+. Configurable Authentication
+
+== Configuration
+
+The JSON configuration
+
+=== JS Script Configuration
+
+[source,json]
+----
+"component": {
+   
+
+
+}
+
+---- 
+
+
+

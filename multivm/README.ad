@@ -1,0 +1,12 @@
+= Multi VM 
+
+.VM support planned:
+. cel-go
+. starlark
+. go-lisp/scheme
+. lua
+. Java
+. https://github.com/dop251/goja[JS]
+. gno VM (interpretted deterministic golang)
+
+

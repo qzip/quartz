@@ -1,6 +1,7 @@
 package merkle
 
 import (
+	"crypto/sha256"
 	"encoding/binary"
 	"io"
 )
@@ -27,6 +28,22 @@ type Tree interface {
 // Hasher represents a hashable piece of data which can be hashed in the Tree.
 type Hasher interface {
 	Hash() []byte
+}
+
+// StringHasher implements Hasher
+type StringHasher string
+
+func (h StringHasher) Hash() []byte {
+	hs := sha256.Sum256([]byte(h))
+	return hs[:]
+}
+
+// ByteHasher implements Hasher
+type ByteHasher []byte
+
+func (h ByteHasher) Hash() []byte {
+	hs := sha256.Sum256(h)
+	return hs[:]
 }
 
 //-----------------------------------------------------------------------

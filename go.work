@@ -8,6 +8,6 @@ use (
 	./imle
 	./merkle
 	./multivm
-	./ondc
 	./qz
+	./jshttp
 )

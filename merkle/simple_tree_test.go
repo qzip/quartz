@@ -5,9 +5,11 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/tendermint/tendermint/crypto/tmhash"
-	cmn "github.com/tendermint/tmlibs/common"
+	"github.com/cometbft/cometbft/crypto/tmhash"
+
+	cmn "github.com/cometbft/cometbft/crypto"
 	. "github.com/tendermint/tmlibs/test"
+	// "github.com/cometbft/cometbft/test"
 )
 
 type testItem []byte

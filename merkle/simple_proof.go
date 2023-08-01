@@ -38,7 +38,7 @@ func SimpleProofsFromStringMap(m map[string]string) (rootHash []byte, proofs map
 // in the underlying key-value pairs.
 // The keys are sorted before the proofs are computed.
 func SimpleProofsFromMap(m map[string]Hasher) (rootHash []byte, proofs map[string]*SimpleProof, keys []string) {
-	sm := newSimpleMap()
+	sm := NewSimpleMap()
 	for k, v := range m {
 		sm.Set(k, v)
 	}

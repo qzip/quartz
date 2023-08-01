@@ -10,7 +10,7 @@ type simpleMap struct {
 	sorted bool
 }
 
-func newSimpleMap() *simpleMap {
+func NewSimpleMap() *simpleMap {
 	return &simpleMap{
 		kvs:    nil,
 		sorted: false,

@@ -25,7 +25,7 @@ func SimpleHashFromHashers(items []Hasher) []byte {
 }
 
 func SimpleHashFromStringMap(m map[string]string) []byte {
-	sm := newSimpleMap()
+	sm := NewSimpleMap()
 	for k, v := range m {
 		sm.Set(k, StringHasher(v))
 	}
@@ -38,7 +38,7 @@ func SimpleHashFromStringMap(m map[string]string) []byte {
 // `item = []byte(Hash(key) | Hash(value))`,
 // sorted by `item`.
 func SimpleHashFromMap(m map[string]Hasher) []byte {
-	sm := newSimpleMap()
+	sm := NewSimpleMap()
 	for k, v := range m {
 		sm.Set(k, v)
 	}

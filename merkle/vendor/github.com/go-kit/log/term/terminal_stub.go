@@ -3,10 +3,14 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-// +build !appengine
+//go:build appengine || js
+// +build appengine js
 
 package term
 
-import "syscall"
+import "io"
 
-const ioctlReadTermios = syscall.TCGETS
+// IsTerminal always returns false on AppEngine.
+func IsTerminal(w io.Writer) bool {
+	return false
+}

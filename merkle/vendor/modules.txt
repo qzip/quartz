@@ -1,26 +1,32 @@
+# github.com/cometbft/cometbft v0.37.2
+github.com/cometbft/cometbft/crypto
+github.com/cometbft/cometbft/crypto/tmhash
+github.com/cometbft/cometbft/libs/bytes
 # github.com/davecgh/go-spew v1.1.1
 github.com/davecgh/go-spew/spew
-# github.com/go-kit/kit v0.10.0
+# github.com/go-kit/kit v0.12.0
 github.com/go-kit/kit/log
 github.com/go-kit/kit/log/level
 github.com/go-kit/kit/log/term
-# github.com/go-logfmt/logfmt v0.5.0
+# github.com/go-kit/log v0.2.1
+github.com/go-kit/log
+github.com/go-kit/log/level
+github.com/go-kit/log/term
+# github.com/go-logfmt/logfmt v0.5.1
 github.com/go-logfmt/logfmt
-# github.com/golang/protobuf v1.4.3
+# github.com/golang/protobuf v1.5.2
 github.com/golang/protobuf/proto
 # github.com/pkg/errors v0.9.1
 github.com/pkg/errors
 # github.com/pmezard/go-difflib v1.0.0
 github.com/pmezard/go-difflib/difflib
-# github.com/stretchr/testify v1.7.0
+# github.com/stretchr/testify v1.8.1
 github.com/stretchr/testify/assert
-# github.com/tendermint/tendermint v0.34.10
-github.com/tendermint/tendermint/crypto/tmhash
 # github.com/tendermint/tmlibs v0.9.0
 github.com/tendermint/tmlibs/common
 github.com/tendermint/tmlibs/log
 github.com/tendermint/tmlibs/test
-# google.golang.org/protobuf v1.25.0
+# google.golang.org/protobuf v1.28.2-0.20220831092852-f930b1dc76e8
 google.golang.org/protobuf/encoding/prototext
 google.golang.org/protobuf/encoding/protowire
 google.golang.org/protobuf/internal/descfmt
@@ -31,21 +37,22 @@ google.golang.org/protobuf/internal/encoding/messageset
 google.golang.org/protobuf/internal/encoding/tag
 google.golang.org/protobuf/internal/encoding/text
 google.golang.org/protobuf/internal/errors
-google.golang.org/protobuf/internal/fieldsort
 google.golang.org/protobuf/internal/filedesc
 google.golang.org/protobuf/internal/filetype
 google.golang.org/protobuf/internal/flags
 google.golang.org/protobuf/internal/genid
 google.golang.org/protobuf/internal/impl
-google.golang.org/protobuf/internal/mapsort
+google.golang.org/protobuf/internal/order
 google.golang.org/protobuf/internal/pragma
 google.golang.org/protobuf/internal/set
 google.golang.org/protobuf/internal/strs
 google.golang.org/protobuf/internal/version
 google.golang.org/protobuf/proto
+google.golang.org/protobuf/reflect/protodesc
 google.golang.org/protobuf/reflect/protoreflect
 google.golang.org/protobuf/reflect/protoregistry
 google.golang.org/protobuf/runtime/protoiface
 google.golang.org/protobuf/runtime/protoimpl
-# gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c
+google.golang.org/protobuf/types/descriptorpb
+# gopkg.in/yaml.v3 v3.0.1
 gopkg.in/yaml.v3

@@ -3,7 +3,7 @@ package compfact
 import (
 	"context"
 	"encoding/json"
-	"ondc/comp"
+	"jshttp/comp"
 	"qz/commands"
 	"reflect"
 )

@@ -41,7 +41,8 @@ func (vjs *VMjs) Exec(ctx context.Context, cfg map[string]interface{}, errChan c
 		errChan <- err
 		return
 	}
-
+	// FIXME:
+	fmt.Print(buf)   // remove it
 	vm := goja.New() // goja.Runtime
 	var randsrc goja.RandSource
 	randsrc, err = newRandSource()

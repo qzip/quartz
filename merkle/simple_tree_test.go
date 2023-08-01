@@ -7,7 +7,7 @@ import (
 
 	"github.com/cometbft/cometbft/crypto/tmhash"
 
-	cmn "github.com/cometbft/cometbft/crypto"
+	"github.com/cometbft/cometbft/crypto"
 	. "github.com/tendermint/tmlibs/test"
 	// "github.com/cometbft/cometbft/test"
 )
@@ -24,7 +24,7 @@ func TestSimpleProof(t *testing.T) {
 
 	items := make([]Hasher, total)
 	for i := 0; i < total; i++ {
-		items[i] = testItem(cmn.RandBytes(tmhash.Size))
+		items[i] = testItem(crypto.CRandBytes(tmhash.Size))
 	}
 
 	rootHash := SimpleHashFromHashers(items)
@@ -56,7 +56,7 @@ func TestSimpleProof(t *testing.T) {
 
 		// Trail too long should make it fail
 		origAunts := proof.Aunts
-		proof.Aunts = append(proof.Aunts, cmn.RandBytes(32))
+		proof.Aunts = append(proof.Aunts, crypto.CRandBytes(32))
 		{
 			ok = proof.Verify(i, total, itemHash, rootHash)
 			if ok {

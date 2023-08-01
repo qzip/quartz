@@ -1,12 +1,8 @@
 package merkle
 
-import (
-	"github.com/tendermint/tendermint/crypto/tmhash"
-)
-
 // SimpleHashFromTwoHashes is the basic operation of the Merkle tree: Hash(left | right).
 func SimpleHashFromTwoHashes(left, right []byte) []byte {
-	var hasher = tmhash.New()
+	var hasher = New() //hash.go
 	err := encodeByteSlice(hasher, left)
 	if err != nil {
 		panic(err)
@@ -28,15 +24,25 @@ func SimpleHashFromHashers(items []Hasher) []byte {
 	return simpleHashFromHashes(hashes)
 }
 
+func SimpleHashFromStringMap(m map[string]string) []byte {
+	sm := NewSimpleMap()
+	for k, v := range m {
+		sm.Set(k, StringHasher(v))
+	}
+	sm.Sort()
+	return sm.Hash()
+}
+
 // SimpleHashFromMap computes a Merkle tree from sorted map.
 // Like calling SimpleHashFromHashers with
 // `item = []byte(Hash(key) | Hash(value))`,
 // sorted by `item`.
 func SimpleHashFromMap(m map[string]Hasher) []byte {
-	sm := newSimpleMap()
+	sm := NewSimpleMap()
 	for k, v := range m {
 		sm.Set(k, v)
 	}
+	sm.Sort()
 	return sm.Hash()
 }
 

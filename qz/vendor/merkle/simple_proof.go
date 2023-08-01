@@ -24,11 +24,21 @@ func SimpleProofsFromHashers(items []Hasher) (rootHash []byte, proofs []*SimpleP
 	return
 }
 
+// SimpleProofsFromStringMap duplicate of
+func SimpleProofsFromStringMap(m map[string]string) (rootHash []byte, proofs map[string]*SimpleProof, keys []string) {
+	mx := map[string]Hasher{}
+
+	for k, v := range m {
+		mx[k] = StringHasher(v)
+	}
+	return SimpleProofsFromMap(mx)
+}
+
 // SimpleProofsFromMap generates proofs from a map. The keys/values of the map will be used as the keys/values
 // in the underlying key-value pairs.
 // The keys are sorted before the proofs are computed.
 func SimpleProofsFromMap(m map[string]Hasher) (rootHash []byte, proofs map[string]*SimpleProof, keys []string) {
-	sm := newSimpleMap()
+	sm := NewSimpleMap()
 	for k, v := range m {
 		sm.Set(k, v)
 	}

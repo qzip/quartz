@@ -5,20 +5,20 @@ package merkle
 // Merkle tree from a map.
 // Leaves are `hash(key) | hash(value)`.
 // Leaves are sorted before Merkle hashing.
-type simpleMap struct {
+type SimpleMap struct {
 	kvs    KVPairs
 	sorted bool
 }
 
-func NewSimpleMap() *simpleMap {
-	return &simpleMap{
+func NewSimpleMap() *SimpleMap {
+	return &SimpleMap{
 		kvs:    nil,
 		sorted: false,
 	}
 }
 
 // Set hashes the key and value and appends it to the kv pairs.
-func (sm *simpleMap) Set(key string, value Hasher) {
+func (sm *SimpleMap) Set(key string, value Hasher) {
 	sm.sorted = false
 
 	// The value is hashed, so you can
@@ -34,12 +34,12 @@ func (sm *simpleMap) Set(key string, value Hasher) {
 
 // Hash Merkle root hash of items sorted by key
 // (UNSTABLE: and by value too if duplicate key).
-func (sm *simpleMap) Hash() []byte {
+func (sm *SimpleMap) Hash() []byte {
 	sm.Sort()
 	return hashKVPairs(sm.kvs)
 }
 
-func (sm *simpleMap) Sort() {
+func (sm *SimpleMap) Sort() {
 	if sm.sorted {
 		return
 	}
@@ -49,7 +49,7 @@ func (sm *simpleMap) Sort() {
 
 // Returns a copy of sorted KVPairs.
 // NOTE these contain the hashed key and value.
-func (sm *simpleMap) KVPairs() KVPairs {
+func (sm *SimpleMap) KVPairs() KVPairs {
 	sm.Sort()
 	kvs := make(KVPairs, len(sm.kvs))
 	copy(kvs, sm.kvs)

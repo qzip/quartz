@@ -1,11 +1,11 @@
 package util
 
 import (
+	"bc/cas"
 	"crypto/rand"
 	"encoding/hex"
 	"encoding/json"
 	"io/ioutil"
-	"qz/cas"
 
 	canjson "github.com/docker/go/canonical/json"
 	jose "gopkg.in/square/go-jose.v2"

@@ -7,7 +7,7 @@ import (
 	"log"
 	"time"
 
-	"qz/blockchain"
+	"bc/blockchain"
 
 	"github.com/alecthomas/jsonschema"
 )

@@ -11,8 +11,8 @@ Author: Ashish Banerjee, <ashish@qzip.in>
 */
 
 import (
+	bc "bc/blockchain"
 	"context"
-	bc "qz/blockchain"
 )
 
 // Importer helper to save the records

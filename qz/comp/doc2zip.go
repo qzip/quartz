@@ -7,10 +7,10 @@ import (
 	"fmt"
 
 	//"html/template"
+	"bc/cas"
 	"io/ioutil"
 	"mime"
 	"net/http"
-	"qz/cas"
 	"qz/commands"
 	"qz/defs"
 	"qz/dsl"
@@ -22,21 +22,21 @@ import (
 	"time"
 )
 
-//DocZipper json to ziped html generated from a DSL tempate
+// DocZipper json to ziped html generated from a DSL tempate
 type DocZipper struct {
 }
 
-//ImagesDir used as default images dir
+// ImagesDir used as default images dir
 const ImagesDir = "images"
 
 // implements seq.Runner interface methods
 
-//Name  implements seq.Runner interface methods
+// Name  implements seq.Runner interface methods
 func (dz *DocZipper) Name() string {
 	return "comp.DocZipper"
 }
 
-//Help  implements seq.Runner interface methods
+// Help  implements seq.Runner interface methods
 func (dz *DocZipper) Help() string {
 	return `
 	# Converts the JSON Doc to Zip file
@@ -49,12 +49,12 @@ func (dz *DocZipper) Help() string {
 	`
 }
 
-//ComponentType component type
+// ComponentType component type
 func (dz *DocZipper) ComponentType() reflect.Type {
 	return reflect.TypeOf(dz)
 }
 
-//Create doc zipper object
+// Create doc zipper object
 func (dz *DocZipper) Create(ctx context.Context, helper seq.CtxHelper, param interface{}, cfg map[string]interface{}, errChan chan error) commands.Pipeline {
 	zp := &zipperPipeline{helper: helper, errChan: errChan}
 
@@ -86,7 +86,7 @@ type zipperPipeline struct {
 	errChan chan error
 }
 
-//Process implements commands.Pipeline method
+// Process implements commands.Pipeline method
 func (z *zipperPipeline) Process(ctx context.Context) {
 	z.helper.SetExecStatus(seq.ExSrunning)
 	util.DebugInfo(ctx, "zipperPipeline.Process: START ")
@@ -149,7 +149,7 @@ func normalizeFileName(flname string, dat map[string]interface{}) string {
 
 }
 
-//doc2zipAST AST (Abstract Syntax Tree) for processing JSON to HTML zip
+// doc2zipAST AST (Abstract Syntax Tree) for processing JSON to HTML zip
 // assumes every thing fits into mem
 type doc2zipAST struct {
 	data *defs.DocSubCols
@@ -236,13 +236,12 @@ func (za *doc2zipAST) copyzip(ctx context.Context, zipName string) error {
 }
 
 /*
-   optional:
-   subCol <sub doc name>
+optional:
+subCol <sub doc name>
 
-   required keywords inside BEGIN template ...END
-   file <file path within the zip>
-   header, body, footer
-
+required keywords inside BEGIN template ...END
+file <file path within the zip>
+header, body, footer
 */
 func (za *doc2zipAST) processTemplate(ctx context.Context, blk *dsl.Block) (err error) {
 	zf := Zfile{path: "undefined-" + time.Now().String() + ".html"}

@@ -9,6 +9,8 @@ Much of the design and code is copied from net.http.FileServe (fs.go)
 TODO: FIXME: This is a work around as mzipfs.go was not working.
 
 unmodied helper functions from fs.go are put here
+
+TODO: replace by embedded.FS (implements fs.FS)
 */
 
 package srvzip

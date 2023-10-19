@@ -1,0 +1,20 @@
+= Latte : inpired by  https://frappeframework.com/[Frappe Framework]
+
+Core framework implemented in Go. Configurable Component Framework. Embedded Serverless JavaScript 5.1.
+
+.Features
+. Embedded JS 5.1
+. Supports multiple File Systems (FS):
+.. OS.FS
+.. Embedded.FS
+.. Database.FS
+. Multiple Databases Supported
+.. PgSQL
+.. MySQL
+.. Dolt
+.. DGraph
+.. ArangoDB
+.. SupaBase
+.. CockroachDB
+. Custom Domain deployment with Autocert (https)
+. Layer 2 blockchain support

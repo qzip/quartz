@@ -1,0 +1,33 @@
+= ErpNext Dtabase API
+
+https://frappeframework.com/docs/user/en/api/database[Db API: exposed to python script], 
+for Latte, this will be JS API ?
+
+Frappe and thus Latte, assumes RDBMS model. In case a db does not support an operation, NOT IMPLEMENTED exception will be thrown.
+
+.Latte Dtabase API (JS)
+. db.get_list
+. db.get_all
+. db.get_value
+. db.get_single_value
+. db.set_value
+. db.exists
+. db.count
+. db.delete 
+. db.truncate 
+. db.commit 
+. db.savepoint
+. db.rollback
+. db.sql 
+. db.multisql
+. db.rename_table
+. db.describe
+. db.change_column_type
+. db.add_index
+. db.add_unique
+
+.Database Transaction Hooks
+. db.before_commit.add(func: Callable)
+. db.after_commit.add(func: Callable)
+. db.before_rollback.add(func: Callable)
+. db.after_rollback.add(func: Callable)

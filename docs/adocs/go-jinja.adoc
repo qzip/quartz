@@ -1,0 +1,39 @@
+= Jinja Templating Engine
+
+ErpNext uses Jinja templating engine.
+
+Go implementation of Jinja https://www.schlachter.tech/solutions/pongo2-template-engine/[pongo2]
+
+
+== ErpNext Jinja
+
+https://frappeframework.com/docs/user/en/api/jinja[Jinja whitelisted API]
+
+https://frappeframework.com/docs/user/en/python-api/routing-and-rendering[routing & rendering]
+
+https://docs.djangoproject.com/en/dev/topics/templates/[Django Template Language]
+
+. https://frappeframework.com/docs/user/en/api/jinja[jinja API]
+. format(value, df, doc)
+. format_date(date_string)
+. get_url()
+. get_doc(doctype, name)
+. get_all(doctype, filters, fields, order_by, start, page_length, pluck)
+. get_list(doctype, filters, fields, order_by, start, page_length)
+. db.get_value(doctype, name, fieldname)
+. db.get_single_value(doctype, fieldname)
+. get_system_settings(fieldname)
+. get_meta(doctype)
+. get_fullname(user_email)
+. render_template(template_name, context)
+. _(string) or _(string)  Trnaslation
+. session.user
+. session.csrf_token
+. form_dict
+. lang  (2 letter lower case coe)
+
+== https://frappeframework.com/docs/user/en/api/utils[Utils]
+**TODO**
+
+== Pongo2
+https://github.com/flosch/pongo2/[pongo2]

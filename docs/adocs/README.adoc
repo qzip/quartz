@@ -1,3 +1,7 @@
 = README
 
 Component Documentation
+
+https://pkg.go.dev/io/fs#FS
+
+https://pkg.go.dev/embed

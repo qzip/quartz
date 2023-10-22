@@ -13,6 +13,8 @@ https://frappeframework.com/docs/user/en/python-api/routing-and-rendering[routin
 
 https://docs.djangoproject.com/en/dev/topics/templates/[Django Template Language]
 
+https://docs.djangoproject.com/en/dev/ref/templates/language/[Django Templating Language]
+
 . https://frappeframework.com/docs/user/en/api/jinja[jinja API]
 . format(value, df, doc)
 . format_date(date_string)

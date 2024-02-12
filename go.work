@@ -8,13 +8,11 @@ use (
 	./jshttp
 	./latte
 	./merkle
-	./merkle/vendor/github.com/go-kit/log
-	./merkle/vendor/github.com/go-logfmt/logfmt
-	./merkle/vendor/gopkg.in/yaml.v3
+
 	./multivm
 	./qz
 	./qz/vendor/github.com/arangodb/go-driver
 	./qz/vendor/github.com/arangodb/go-velocypack
 	./qz/vendor/github.com/pascaldekloe/jwt
-	./qz/vendor/merkle
+	./shake
 )

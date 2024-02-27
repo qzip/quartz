@@ -5,3 +5,13 @@ Component Documentation
 https://pkg.go.dev/io/fs#FS
 
 https://pkg.go.dev/embed
+
+== Golang Resources
+
+https://github.com/omissis/go-jsonschema["go-jsonschema is a tool to generate Go data types from JSON Schema definitions."]
+
+https://github.com/invopop/jsonschema[ generate JSON Schemas from Go types through reflection.]
+
+https://github.com/qri-io/jsonschema[golang, validate json against a schema]
+
+https://github.com/gnolang/gno/tree/master/gnovm[GnoVM]

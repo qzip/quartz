@@ -47,7 +47,7 @@ type HTTPHandlerFactory interface {
 type SrvHTTP struct {
 }
 
-//Name implements qz/commands/Commander interface
+// Name implements qz/commands/Commander interface
 func (srv *SrvHTTP) Name() string {
 	return "cmd.SrvHTTP"
 }

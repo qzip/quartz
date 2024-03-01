@@ -53,7 +53,15 @@ func (vjs *VMjs) Exec(ctx context.Context, cfg map[string]interface{}, errChan c
 	}
 
 	vm.SetRandSource(randsrc)
+	// install the functions from helpers
 
+	jval, err := vm.RunString(string(buf))
+	if err != nil {
+		util.DebugInfo(ctx, err.Error())
+		errChan <- err
+	} else {
+		util.DebugInfo(ctx, jval.String())
+	}
 }
 
 // TODO: this is a source of non determinism, should not be used for smart contracts

@@ -45,7 +45,7 @@ func (vjs *VMjs) Exec(ctx context.Context, cfg map[string]interface{}, errChan c
 	fmt.Print(buf)   // remove it
 	vm := goja.New() // goja.Runtime
 	var randsrc goja.RandSource
-	randsrc, err = newRandSource()
+	randsrc, err = NewRandSource()
 	if err != nil {
 		util.DebugInfo(ctx, err.Error())
 		errChan <- err
@@ -54,7 +54,7 @@ func (vjs *VMjs) Exec(ctx context.Context, cfg map[string]interface{}, errChan c
 
 	vm.SetRandSource(randsrc)
 	// install the functions from helpers
-
+	// vm.Set(name, interface{})
 	jval, err := vm.RunString(string(buf))
 	if err != nil {
 		util.DebugInfo(ctx, err.Error())
@@ -66,7 +66,7 @@ func (vjs *VMjs) Exec(ctx context.Context, cfg map[string]interface{}, errChan c
 
 // TODO: this is a source of non determinism, should not be used for smart contracts
 // set it to throw exception or return zero to make it deterministic?
-func newRandSource() (goja.RandSource, error) {
+func NewRandSource() (goja.RandSource, error) {
 	var seed int64
 	if err := binary.Read(crand.Reader, binary.LittleEndian, &seed); err != nil {
 		return nil, fmt.Errorf("Could not read random bytes: %v", err)

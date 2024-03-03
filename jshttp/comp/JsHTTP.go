@@ -3,6 +3,10 @@ package comp
 import (
 	"context"
 	"net/http"
+	"os"
+
+	"github.com/Workiva/go-datastructures/threadsafe/err"
+	"github.com/dop251/goja"
 )
 
 /*
@@ -14,6 +18,7 @@ Each URL path can be associated with a different JS function.
 type JsHandler struct {
 	Ctx    context.Context        // for accessing Helpers from JS VM
 	Cfg    map[string]interface{} // full config is available to JS VM
+	prog   *goja.Program
 	Params JsHandlerParam
 }
 
@@ -23,11 +28,37 @@ type JsHandlerParam struct {
 }
 
 // ServeHTTP implements http.Handler
-func (jsh *JsHandler) ServeHTTP(http.ResponseWriter, *http.Request) {
+func (jsh *JsHandler) ServeHTTP(req http.ResponseWriter, res *http.Request) {
+	//call the JS function
+	vm := goja.New()
+	reqVal := vm.ToValue(&req)
+	resVal := vm.ToValue(res)
+	if _, err := vm.RunProgram(jsh.prog); err != nil {
+		http.Error(req, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	serv, ok := goja.AssertFunction(vm.Get(jsh.Params.Function))
+	if !ok {
+		http.Error(req, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	if _, err := serv(nil, reqVal, resVal); err != nil {
+		http.Error(req, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	//res = resVal.Export().(*http.ResponseWriter)
 
 }
 
 func (jsh *JsHandler) ExtractJs() error {
-
+	prog, err := os.ReadFile(jsh.Params.Script)
+	if err != nil {
+		return err
+	}
+	jsh.prog, err = goja.Compile(jsh.Params.Script, string(prog), true)
+	if err != nil {
+		return err
+	}
 	return nil
 }

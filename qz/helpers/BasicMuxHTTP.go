@@ -57,6 +57,8 @@ func (mh *BasicMuxHTTP) CreateHelper(ctx context.Context, param interface{}, cfg
 	return
 }
 
+// installMux installs the handlers in the mux, its expectes the param to be a map[string]string
+// where the key is the path and the value is the context name of the handler
 func (mh *BasicMuxHTTP) installMux(ctx context.Context, mux *http.ServeMux, param interface{}) error {
 	if param == nil {
 		return commands.NewFatalError("handler.BasicMuxHTTP: parameter expected")

@@ -40,19 +40,19 @@ func (jsf *JavaScriptRunFactory) CreateHelper(ctx context.Context, param interfa
 	jsr = &comp.JsHandler{
 		Ctx:    ctx,
 		Cfg:    cfg,
-		Params: params,
+		Params: *params,
 	}
 	return
 }
 
-func (jsf *JavaScriptRunFactory) getParams(param interface{}) (pathCtx map[string]string, err error) {
-	pathCtx = make(map[string]string)
+func (jsf *JavaScriptRunFactory) getParams(param interface{}) (scriptParams *comp.JsHandlerParam, err error) {
+	scriptParams = &comp.JsHandlerParam{}
 	by, err := json.Marshal(param)
 	if err != nil {
 		err = commands.NewFatalError(err.Error())
 		return
 	}
-	err = json.Unmarshal(by, &pathCtx)
+	err = json.Unmarshal(by, scriptParams)
 
 	return
 }

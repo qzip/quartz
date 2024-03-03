@@ -10,7 +10,6 @@ require (
 )
 
 require (
-	github.com/Workiva/go-datastructures v1.1.1
 	github.com/docker/go v1.5.1-1 // indirect
 	gopkg.in/square/go-jose.v2 v2.6.0 // indirect
 )

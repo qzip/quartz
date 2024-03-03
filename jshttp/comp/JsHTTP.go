@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/Workiva/go-datastructures/threadsafe/err"
+	//"github.com/Workiva/go-datastructures/threadsafe/err"
 	"github.com/dop251/goja"
 )
 
@@ -33,13 +33,15 @@ func (jsh *JsHandler) ServeHTTP(req http.ResponseWriter, res *http.Request) {
 	vm := goja.New()
 	reqVal := vm.ToValue(&req)
 	resVal := vm.ToValue(res)
-	if _, err := vm.RunProgram(jsh.prog); err != nil {
+	_, err := vm.RunProgram(jsh.prog)
+	if err != nil {
 		http.Error(req, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	serv, ok := goja.AssertFunction(vm.Get(jsh.Params.Function))
 	if !ok {
-		http.Error(req, err.Error(), http.StatusInternalServerError)
+		err := (jsh.Params.Function + " not found in" + jsh.Params.Script)
+		http.Error(req, err, http.StatusInternalServerError)
 		return
 	}
 

@@ -10,11 +10,11 @@ use (
 	./jshttp
 	./latte
 	./merkle
-
 	./multivm
 	./qz
 	./qz/vendor/github.com/arangodb/go-driver
 	./qz/vendor/github.com/arangodb/go-velocypack
 	./qz/vendor/github.com/pascaldekloe/jwt
 	./shake
+
 )

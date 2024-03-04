@@ -5,7 +5,7 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 	"encoding/json"
-	"io/ioutil"
+	"os"
 
 	canjson "github.com/docker/go/canonical/json"
 	jose "gopkg.in/square/go-jose.v2"
@@ -93,7 +93,7 @@ func Str2Bin(in string) (out []byte, err error) {
 func GetJSONWebKey(jwkFile string) (jwk *jose.JSONWebKey, err error) {
 	var jwkIn = jwkBin
 	if len(jwkFile) > 1 {
-		jwkIn, err = ioutil.ReadFile(jwkFile)
+		jwkIn, err = os.ReadFile(jwkFile)
 		if err != nil {
 			return
 		}

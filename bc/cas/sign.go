@@ -3,7 +3,7 @@ package cas
 import (
 	"crypto/rand"
 	"encoding/hex"
-	"io/ioutil"
+	"os"
 
 	jose "gopkg.in/square/go-jose.v2"
 )
@@ -23,7 +23,7 @@ var jwkBin = []byte(`{"use":"sig","kty":"OKP","kid":"in.qzip.blockchain.01may201
 func GetJSONWebKey(jwkFile string) (jwk *jose.JSONWebKey, err error) {
 	var jwkIn = jwkBin
 	if len(jwkFile) > 1 {
-		jwkIn, err = ioutil.ReadFile(jwkFile)
+		jwkIn, err = os.ReadFile(jwkFile)
 		if err != nil {
 			return
 		}

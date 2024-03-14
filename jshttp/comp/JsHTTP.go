@@ -48,7 +48,6 @@ func (jsh *JsHandler) ServeHTTP(req http.ResponseWriter, res *http.Request) {
 		http.Error(req, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	// install the helpers
 
 	serv, ok := goja.AssertFunction(vm.Get(jsh.Params.Function))
 	if !ok {

@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
 	"qz/commands"
@@ -64,7 +63,7 @@ func Runner(cfgFile string) {
 
 func readCfg(fname string) (cfg map[string]interface{}, err error) {
 	cfg = make(map[string]interface{}, 0)
-	jsonb, err := ioutil.ReadFile(fname)
+	jsonb, err := os.ReadFile(fname)
 	if err != nil {
 		return
 	}

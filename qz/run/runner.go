@@ -63,8 +63,9 @@ func Runner(cfgFile string) {
 
 func readCfg(fname string) (cfg map[string]interface{}, err error) {
 	cfg = make(map[string]interface{}, 0)
-	jsonb, err := os.ReadFile(fname)
-	if err != nil {
+	jsonb, erx := os.ReadFile(fname)
+	if erx != nil {
+		err = erx
 		return
 	}
 

@@ -14,7 +14,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"os"
 	"qz/commands"
 	"qz/seq"
 	"reflect"
@@ -35,7 +35,7 @@ func (fs *LoadJSON) Load(ctx context.Context, param interface{}, cfg map[string]
 		errChan <- commands.NewFatalError("LoadJSON.Load: param is not a string or is empty")
 		return nil
 	}
-	jsonb, err := ioutil.ReadFile(fl)
+	jsonb, err := os.ReadFile(fl)
 	if err != nil {
 		errChan <- commands.NewFatalError(fmt.Sprintf("LoadJSON.Load.read: %v", err.Error()))
 		return nil
@@ -49,14 +49,14 @@ func (fs *LoadJSON) Load(ctx context.Context, param interface{}, cfg map[string]
 	return recs
 }
 
-//Fload loads a JSON file of type map[string]interface{}
+// Fload loads a JSON file of type map[string]interface{}
 type Fload struct {
 	param   FloadParam
 	errChan chan error
 	helper  seq.CtxHelper
 }
 
-//FloadParam params for Fload
+// FloadParam params for Fload
 type FloadParam struct {
 	InFileName     string `json:"inFileName"`
 	DataOutCtxName string `json:"dataOutCtxName"`
@@ -64,7 +64,7 @@ type FloadParam struct {
 
 func (fl *Fload) load() interface{} {
 
-	jsonb, err := ioutil.ReadFile(fl.param.InFileName)
+	jsonb, err := os.ReadFile(fl.param.InFileName)
 	if err != nil {
 		fl.helper.SetExecStatus(seq.ExSerror)
 		fl.errChan <- commands.NewFatalError(fmt.Sprintf("Fload.Load.read: %v", err.Error()))
@@ -90,7 +90,7 @@ func (fl *Fload) Process(ctx context.Context) {
 
 }
 
-//Create implements seq.RunSeq method
+// Create implements seq.RunSeq method
 func (fs *LoadJSON) Create(ctx context.Context, helper seq.CtxHelper, param interface{}, cfg map[string]interface{}, errCh chan error) commands.Pipeline {
 	fl := &Fload{helper: helper, errChan: errCh}
 	var err error

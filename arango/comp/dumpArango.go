@@ -1,8 +1,6 @@
 package comp
 
 import (
-	"bufio"
-	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -11,6 +9,7 @@ import (
 	"strings"
 
 	driver "github.com/arangodb/go-driver"
+	"github.com/google/uuid"
 )
 
 type DumpArango struct {
@@ -84,28 +83,9 @@ func (ad *DumpArango) Process(ctx context.Context) {
 		return
 	}
 	defer crsr.Close()
-	var b bytes.Buffer
-	out := bufio.NewWriter(&b)
-	_, err = out.WriteString("[\n")
-	if err != nil {
-		ad.helper.SetExecStatus(seq.ExSerror)
-		ad.errChan <- err
-		return
-	}
-	first := true
+
 	collMap := make(map[string]map[string]*json.RawMessage)
 	for crsr.HasMore() {
-		if !first {
-			_, err = out.WriteString(",\n")
-			if err != nil {
-				ad.helper.SetExecStatus(seq.ExSerror)
-				ad.errChan <- err
-				return
-			}
-		} else {
-			first = false
-		}
-
 		bodyMap := make(map[string]*json.RawMessage)
 		meta, err := crsr.ReadDocument(ctx, &bodyMap)
 		if err != nil {
@@ -113,27 +93,18 @@ func (ad *DumpArango) Process(ctx context.Context) {
 			ad.errChan <- err
 			return
 		}
+		docKey := uuid.NewString()
+		if len(meta.Key) > 0 {
+			docKey = meta.Key
+		} else if len(meta.ID) > 0 {
+			docKey = meta.ID.String()
+		}
+		collMap[docKey] = bodyMap
 
 	}
-	_, err = out.WriteString("]\n")
-	if err != nil {
-		ad.helper.SetExecStatus(seq.ExSerror)
-		ad.errChan <- err
-		return
-	}
+
 	util.DebugInfo(ctx, "ArangoInsert.Process: get documents")
 
 	ad.helper.SetExecStatus(seq.ExSok)
-
-}
-
-func (ad *DumpArango) getRecord(ctx context.Context) {
-	data := make(map[string]interface{})
-	if err := ref.Get(ctx, &data); err != nil {
-		util.DebugInfo(ctx, err.Error())
-		ad.errChan <- err
-		ad.helper.SetExecStatus(seq.ExSerror)
-		return
-	}
 
 }

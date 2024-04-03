@@ -20,7 +20,7 @@ type SaveJSON struct {
 	w       io.Writer
 }
 
-//SaveJSONParam parameters
+// SaveJSONParam parameters
 type SaveJSONParam struct {
 	DataInCtxName string `json:"dataInCtxName"`
 	OutFileName   string `json:"outFileName"`
@@ -48,12 +48,12 @@ func (sav *SaveJSON) ComponentType() reflect.Type {
 	return reflect.TypeOf(sav)
 }
 
-//Create implements seq.Runner interface
+// Create implements seq.Runner interface
 func (sav *SaveJSON) Create(helper seq.CtxHelper, param interface{}, cfg map[string]interface{}, errChan chan error) commands.Pipeline {
 	sav.helper = helper
 	sav.errChan = errChan
 
-	if err := sav.getParams(helper, param, cfg); err != nil {
+	if err := sav.getParams(param); err != nil {
 		helper.SetExecStatus(seq.ExSerror)
 		errChan <- err
 		return nil
@@ -62,7 +62,7 @@ func (sav *SaveJSON) Create(helper seq.CtxHelper, param interface{}, cfg map[str
 	return sav
 }
 
-func (sav *SaveJSON) getParams(ctx context.Context, param interface{}, cfg map[string]interface{}) error {
+func (sav *SaveJSON) getParams(param interface{}) error {
 	if param == nil {
 		return fmt.Errorf("SaveJSON.getParams: nil param")
 	}
@@ -79,7 +79,7 @@ func (sav *SaveJSON) getParams(ctx context.Context, param interface{}, cfg map[s
 	return nil
 }
 
-//Process implements commands.Pipeline method
+// Process implements commands.Pipeline method
 func (sav *SaveJSON) Process(ctx context.Context) {
 	sav.helper.SetExecStatus(seq.ExSrunning)
 	// get data from context helper

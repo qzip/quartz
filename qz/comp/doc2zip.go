@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"os"
 
 	//"html/template"
 	"bc/cas"
@@ -60,7 +61,7 @@ func (dz *DocZipper) Create(ctx context.Context, helper seq.CtxHelper, param int
 
 	fl := fmt.Sprintf("%v", param)
 	util.DebugInfo(ctx, fmt.Sprintf("DocZipper.Create file [%v] START", fl))
-	fbuf, err := ioutil.ReadFile(fl)
+	fbuf, err := os.ReadFile(fl)
 	if err != nil {
 		util.DebugInfo(ctx, fmt.Sprintf("DocZipper.Create: file: [%v], err: %v ", fl, err.Error()))
 		helper.SetExecStatus(seq.ExSerror)
@@ -394,13 +395,15 @@ func (za *doc2zipAST) getImages() error {
 	return nil
 }
 
+/*
 func (za *doc2zipAST) handleMap(m map[string]interface{}) error {
 
 	return nil
 }
+*/
 
 func (za *doc2zipAST) getImage(url string) error {
-	buf, err := GetContent(url)
+	buf, err := util.GetContent(url)
 	if err != nil {
 		return err
 	}
@@ -416,14 +419,15 @@ func (za *doc2zipAST) getImage(url string) error {
 	return nil
 }
 
-type processor func(context.Context, *Zfile, *dsl.Block) error
+// type processor func(context.Context, *Zfile, *dsl.Block) error
 
-var processors map[string]processor
+// var processors map[string]processor
 
 func init() {
 
 }
 
+/*
 func setMacro(ctx context.Context, zf *Zfile, blk *dsl.Block) error {
 
 	return nil
@@ -432,3 +436,4 @@ func setZipFlname(ctx context.Context, zf *Zfile, blk *dsl.Block) error {
 
 	return nil
 }
+*/

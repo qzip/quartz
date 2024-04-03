@@ -1,7 +1,10 @@
 package comp
 
 import (
+	"bufio"
+	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"qz/seq"
 	"qz/util"
@@ -80,10 +83,44 @@ func (ad *DumpArango) Process(ctx context.Context) {
 		ad.errChan <- err
 		return
 	}
+	defer crsr.Close()
+	var b bytes.Buffer
+	out := bufio.NewWriter(&b)
+	_, err = out.WriteString("[\n")
+	if err != nil {
+		ad.helper.SetExecStatus(seq.ExSerror)
+		ad.errChan <- err
+		return
+	}
+	first := true
+	collMap := make(map[string]map[string]*json.RawMessage)
 	for crsr.HasMore() {
+		if !first {
+			_, err = out.WriteString(",\n")
+			if err != nil {
+				ad.helper.SetExecStatus(seq.ExSerror)
+				ad.errChan <- err
+				return
+			}
+		} else {
+			first = false
+		}
+
+		bodyMap := make(map[string]*json.RawMessage)
+		meta, err := crsr.ReadDocument(ctx, &bodyMap)
+		if err != nil {
+			ad.helper.SetExecStatus(seq.ExSerror)
+			ad.errChan <- err
+			return
+		}
 
 	}
-
+	_, err = out.WriteString("]\n")
+	if err != nil {
+		ad.helper.SetExecStatus(seq.ExSerror)
+		ad.errChan <- err
+		return
+	}
 	util.DebugInfo(ctx, "ArangoInsert.Process: get documents")
 
 	ad.helper.SetExecStatus(seq.ExSok)

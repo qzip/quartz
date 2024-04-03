@@ -2,10 +2,10 @@ package comp
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"qz/seq"
 	"qz/util"
+	"strings"
 
 	driver "github.com/arangodb/go-driver"
 )
@@ -15,10 +15,7 @@ type DumpArango struct {
 	CollectionName  string `json:"collection"`
 	DbHelperCtxName string `json:"dbHelper"`
 	// Assumes map[string]interface{}
-	DataInCtxName               string `json:"data,omitempty"`
-	CreateDbIfNotExists         bool   `json:"createDbIfNotExists,omitempty"`
-	CreateCollectionIfNotExists bool   `json:"createCollectionIfNotExists,omitempty"`
-	UpdateDocumentIfExists      bool   `json:"updateDocumentIfExists,omitempty"`
+	DataOutCtxName string `json:"data,omitempty"`
 
 	//private fields
 	helper  seq.CtxHelper
@@ -41,29 +38,10 @@ func (ad *DumpArango) SetChanErr(ce chan error) {
 // Process implements Pipeline (required by seq.RunSeq)
 func (ad *DumpArango) Process(ctx context.Context) {
 	ad.helper.SetExecStatus(seq.ExSrunning)
-	if ad.DataInCtxName == "" {
-		ad.DataInCtxName = DefaultDataCtxName
+	if ad.DataOutCtxName == "" {
+		ad.DataOutCtxName = DefaultDataCtxName
 	}
-	// get data value from previous pipeline element
-	data := ad.helper.Value(ad.DataInCtxName)
-	if data == nil {
-		ad.helper.SetExecStatus(seq.ExSerror)
-		ad.errChan <- fmt.Errorf("ArangoInsert.Process:#1 %v context helper not found", ad.DataInCtxName)
-		return
-	}
-	// transform
-	col := make(map[string]map[string]interface{})
-	if by, err := json.Marshal(data); err == nil {
-		if err = json.Unmarshal(by, &col); err != nil {
-			ad.helper.SetExecStatus(seq.ExSerror)
-			ad.errChan <- fmt.Errorf("ArangoInsert.Process:#2 %v JSON unmarshall error", ad.DataInCtxName)
-			return
-		}
-	} else {
-		ad.helper.SetExecStatus(seq.ExSerror)
-		ad.errChan <- fmt.Errorf("ArangoInsert.Process:#3 %v JSON marshall error", ad.DataInCtxName)
-		return
-	}
+
 	// create cleint
 	clhlp := ad.helper.Value(ad.DbHelperCtxName)
 	if clhlp == nil {
@@ -79,26 +57,40 @@ func (ad *DumpArango) Process(ctx context.Context) {
 		return
 	}
 	util.DebugInfo(ctx, "ArangoInsert.Process: Creating NewClient")
-	client, err := ad.clientHelper.NewClient()
+	var err error
+	ad.client, err = ad.clientHelper.NewClient()
 	if err != nil {
 		ad.helper.SetExecStatus(seq.ExSerror)
 		ad.errChan <- err
 		return
 	}
-	util.DebugInfo(ctx, "ArangoInsert.Process: Insert/Update documents")
-
-	// col is the key,value collection
-	if err = ad.insertDocuments(ctx, col); err != nil {
+	ad.database, err = ad.client.Database(ctx, ad.Database)
+	if err != nil {
 		ad.helper.SetExecStatus(seq.ExSerror)
 		ad.errChan <- err
 		return
 	}
 
+	/*FOR doc in @col return doc */
+	qry := strings.Replace("FOR doc in @col return doc", "@col", ad.CollectionName, -1)
+	crsr, err := ad.database.Query(ctx, qry, nil)
+	//ad.collection, err = ad.database.Collection(ctx, ad.CollectionName)
+	if err != nil {
+		ad.helper.SetExecStatus(seq.ExSerror)
+		ad.errChan <- err
+		return
+	}
+	for crsr.HasMore() {
+
+	}
+
+	util.DebugInfo(ctx, "ArangoInsert.Process: get documents")
+
 	ad.helper.SetExecStatus(seq.ExSok)
 
 }
 
-func (ad *DumpArango) getRecord() {
+func (ad *DumpArango) getRecord(ctx context.Context) {
 	data := make(map[string]interface{})
 	if err := ref.Get(ctx, &data); err != nil {
 		util.DebugInfo(ctx, err.Error())

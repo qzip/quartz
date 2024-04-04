@@ -2,11 +2,13 @@ module doltdb
 
 go 1.21.6
 
-require {
+require (
 	qz v0.0.0
+	bc v0.0.0
 )
 
 replace (
-	merkle => ../ondc-server/merkle
-	qz => ../ondc-server/qz
+	merkle => ../merkle
+	qz => ../qz
+	bc => ../bc
 )

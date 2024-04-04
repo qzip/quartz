@@ -104,7 +104,7 @@ func (ad *DumpArango) Process(ctx context.Context) {
 	}
 
 	util.DebugInfo(ctx, "ArangoInsert.Process: get documents")
-
+	ad.helper.SetKeyValue(ad.DataOutCtxName, collMap)
 	ad.helper.SetExecStatus(seq.ExSok)
 
 }

@@ -14,8 +14,8 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"l2algo/commands"
-	"l2algo/util"
+	"qz/commands"
+	"qz/util"
 	"reflect"
 
 	"github.com/algorand/go-algorand-sdk/client/v2/algod"

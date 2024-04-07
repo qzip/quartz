@@ -1,4 +1,4 @@
-package config
+package gitter
 
 import (
 	"encoding/json"

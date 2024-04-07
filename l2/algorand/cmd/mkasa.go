@@ -15,8 +15,8 @@ import (
 	"crypto/ed25519"
 	"encoding/json"
 	"fmt"
-	"l2algo/commands"
-	"l2algo/util"
+	"l2/algorand/util"
+	"qz/commands"
 	"reflect"
 
 	"github.com/algorand/go-algorand-sdk/client/v2/algod"
@@ -25,7 +25,7 @@ import (
 	"github.com/algorand/go-algorand-sdk/types"
 )
 
-//AsaParams sub parameters for asset
+// AsaParams sub parameters for asset
 type AsaParams struct {
 	AssetName     string `json:"assetName"`
 	UnitName      string `json:"unitName"`

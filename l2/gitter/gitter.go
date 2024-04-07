@@ -1,7 +1,6 @@
 package gitter
 
 import (
-	"notary/config"
 	"time"
 
 	"github.com/go-git/go-git/v5"
@@ -11,7 +10,7 @@ import (
 
 type Repo struct {
 	git  *git.Repository
-	user *config.Author
+	user *Author
 }
 
 func Open(path string) (g *git.Repository, err error) {
@@ -19,7 +18,7 @@ func Open(path string) (g *git.Repository, err error) {
 	return
 }
 
-func NewRepo(path string, user *config.Author) (repo *Repo, err error) {
+func NewRepo(path string, user *Author) (repo *Repo, err error) {
 	repo = &Repo{user: user}
 	repo.git, err = git.PlainOpen(path)
 	return

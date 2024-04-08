@@ -4,12 +4,12 @@ import (
 	"context"
 	"crypto/ed25519"
 	"encoding/base64"
-	"encoding/json"
 	"fmt"
 	"qz/seq"
 	"qz/util"
 
 	"github.com/algorand/go-algorand-sdk/v2/client/v2/algod"
+	"github.com/algorand/go-algorand-sdk/v2/client/v2/common/models"
 	"github.com/algorand/go-algorand-sdk/v2/crypto"
 	"github.com/algorand/go-algorand-sdk/v2/transaction"
 	"github.com/algorand/go-algorand-sdk/v2/types"
@@ -19,7 +19,15 @@ const (
 	AlgodAddress   = "http://localhost:4001"
 	DataInCtxName  = "data"
 	DataOutCtxName = "confirmedTxn"
+	Namespace      = "quartz.l2.algorand.comp.AlgoTransaction"
+	W3CdidPrefix   = "did:algorand:txn:"
 )
+
+type AlgoTransaction struct {
+	W3Cdid    string                                `json:"w3cdid"`
+	Namespace string                                `json:"namespace"`
+	TxnRes    models.PendingTransactionInfoResponse `json:"txnRes"`
+}
 
 type AlgoNotarize struct {
 	Base64PrivateKey string `json:"base64PrivateKey"`
@@ -27,6 +35,9 @@ type AlgoNotarize struct {
 	AlgodToken       string `json:"algodToken,omitempty"`
 	DataInCtxName    string `json:"noteKey,omitempty"`
 	DataOutCtxName   string `json:"confirmedTxnKey,omitempty"`
+	W3CdidPrefix     string `json:"w3cdidPrefix,omitempty"`
+	Namespace        string `json:"namespace,omitempty"`
+
 	//private fields
 	helper      seq.CtxHelper
 	errChan     chan error
@@ -56,6 +67,12 @@ func (an *AlgoNotarize) Process(ctx context.Context) {
 	}
 	if an.DataOutCtxName == "" {
 		an.DataOutCtxName = DataOutCtxName
+	}
+	if an.W3CdidPrefix == "" {
+		an.W3CdidPrefix = W3CdidPrefix
+	}
+	if an.Namespace == "" {
+		an.Namespace = Namespace
 	}
 	var err error
 	if an.Base64PrivateKey, err = util.ReplaceEnv(an.Base64PrivateKey); err != nil {
@@ -111,13 +128,13 @@ func (an *AlgoNotarize) Process(ctx context.Context) {
 		return
 	}
 	// https://pkg.go.dev/github.com/algorand/go-algorand-sdk/v2@v2.4.0/client/v2/common/models#PendingTransactionInfoResponse
-	p, err := json.MarshalIndent(confirmedTxn, "\n", " ")
-	if err != nil {
-		an.helper.SetExecStatus(seq.ExSerror)
-		an.errChan <- err
-		return
+
+	txn := &AlgoTransaction{
+		W3Cdid:    an.W3CdidPrefix + pendingTxID,
+		Namespace: an.Namespace,
+		TxnRes:    confirmedTxn,
 	}
-	an.helper.SetKeyValue(an.DataOutCtxName, string(p))
+	an.helper.SetKeyValue(an.DataOutCtxName, *txn)
 	an.helper.SetExecStatus(seq.ExSok)
 }
 

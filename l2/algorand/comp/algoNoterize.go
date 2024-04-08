@@ -84,6 +84,11 @@ func (an *AlgoNotarize) Process(ctx context.Context) {
 
 	// create txn
 	tx, err := an.createTxn(ctx)
+	if err != nil {
+		an.helper.SetExecStatus(seq.ExSerror)
+		an.errChan <- err
+		return
+	}
 	// sign txn
 	_, sptxn, err := crypto.SignTransaction(an.pvtKey, *tx)
 	if err != nil {

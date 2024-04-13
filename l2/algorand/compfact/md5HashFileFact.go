@@ -9,28 +9,28 @@ import (
 	"reflect"
 )
 
-type AlgoNotarizeFact struct {
+type Md5HashFileFact struct {
 }
 
 // implements qz/command/ComponentFactory
-func (anf *AlgoNotarizeFact) Name() string {
-	return "comp.AlgoNotarizeFactory"
+func (anf *Md5HashFileFact) Name() string {
+	return "comp.Md5HashFileFactory"
 }
 
 // implements qz/command/ComponentFactory
-func (anf *AlgoNotarizeFact) Help() string {
+func (anf *Md5HashFileFact) Help() string {
 	help := ``
 	return help
 }
 
 // implements qz/command/ComponentFactory
-func (anf *AlgoNotarizeFact) ComponentType() reflect.Type {
+func (anf *Md5HashFileFact) ComponentType() reflect.Type {
 	return reflect.TypeOf(anf)
 }
 
 // Create implements seq.Runner interface method
-func (anf *AlgoNotarizeFact) Create(ctx context.Context, helper seq.CtxHelper, param interface{}, cfg map[string]interface{}, errCh chan error) commands.Pipeline {
-	an := comp.AlgoNotarize{}
+func (anf *Md5HashFileFact) Create(ctx context.Context, helper seq.CtxHelper, param interface{}, cfg map[string]interface{}, errCh chan error) commands.Pipeline {
+	an := comp.Md5HashFile{}
 	by, err := json.Marshal(param)
 	if err != nil {
 		helper.SetExecStatus(seq.ExSerror)

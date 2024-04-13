@@ -16,17 +16,19 @@ import (
 )
 
 const (
-	AlgodAddress   = "http://localhost:4001"
-	DataInCtxName  = "data"
-	DataOutCtxName = "confirmedTxn"
-	Namespace      = "quartz.l2.algorand.comp.AlgoTransaction"
-	W3CdidPrefix   = "did:algorand:txn:"
+	AlgodAddress    = "http://localhost:4001"
+	DataInCtxName   = "data"
+	DataOutCtxName  = "confirmedTxn"
+	MetadataCtxName = "metadata"
+	Namespace       = "quartz.l2.algorand.comp.AlgoTransaction"
+	W3CdidPrefix    = "did:algorand:txn:"
 )
 
 type AlgoTransaction struct {
 	W3Cdid    string                                `json:"w3cdid"`
 	Namespace string                                `json:"namespace"`
 	TxnRes    models.PendingTransactionInfoResponse `json:"txnRes"`
+	Metadata  interface{}                           `json:"metadata,omitempty"`
 }
 
 type AlgoNotarize struct {
@@ -35,6 +37,7 @@ type AlgoNotarize struct {
 	AlgodToken       string `json:"algodToken,omitempty"`
 	DataInCtxName    string `json:"noteKey,omitempty"`
 	DataOutCtxName   string `json:"confirmedTxnKey,omitempty"`
+	MetadataCtxName  string `json:"metadataKey,omitempty"`
 	W3CdidPrefix     string `json:"w3cdidPrefix,omitempty"`
 	Namespace        string `json:"namespace,omitempty"`
 
@@ -73,6 +76,9 @@ func (an *AlgoNotarize) Process(ctx context.Context) {
 	}
 	if an.Namespace == "" {
 		an.Namespace = Namespace
+	}
+	if an.MetadataCtxName == "" {
+		an.MetadataCtxName = MetadataCtxName
 	}
 	var err error
 	if an.Base64PrivateKey, err = util.ReplaceEnv(an.Base64PrivateKey); err != nil {
@@ -133,6 +139,7 @@ func (an *AlgoNotarize) Process(ctx context.Context) {
 		W3Cdid:    an.W3CdidPrefix + pendingTxID,
 		Namespace: an.Namespace,
 		TxnRes:    confirmedTxn,
+		Metadata:  an.helper.Value(an.MetadataCtxName), // corelates the notarized txn with its context
 	}
 	an.helper.SetKeyValue(an.DataOutCtxName, *txn)
 	an.helper.SetExecStatus(seq.ExSok)

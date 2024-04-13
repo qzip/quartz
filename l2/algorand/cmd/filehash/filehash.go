@@ -4,15 +4,12 @@ Copyright (c) 2020, QzIP Blockchain Technology LLP
 All Rights Reserved.
 
 Author: Ashish Banerjee, <ashish@qzip.in>
-
-
 */
 package main
 
 import (
 	"encoding/base32"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
 
@@ -24,7 +21,7 @@ func main() {
 		fmt.Printf("%v <file name to compute sha> \n", os.Args[0])
 		return
 	}
-	buf, err := ioutil.ReadFile(os.Args[1])
+	buf, err := os.ReadFile(os.Args[1])
 	if err != nil {
 		log.Fatal(err)
 	}

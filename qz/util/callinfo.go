@@ -9,8 +9,8 @@ import (
 // DebugInfoCtxKey key to context
 var DebugInfoCtxKey = "debug"
 
-//Debug Global setting
-var Debug = false
+// Debug Global setting
+var Debug = true
 
 // DebugInfoHandler component must implement this interface
 type DebugInfoHandler interface {

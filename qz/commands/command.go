@@ -16,6 +16,7 @@ package commands
 
 import (
 	"context"
+	"log"
 	"os"
 	"os/signal"
 	"qz/util"
@@ -114,7 +115,10 @@ func (run *CommandRunner) setdbg(cfg map[string]interface{}) {
 	dbg, ok := (cfg[CfgDebugKey]).(bool)
 	if ok {
 		util.Debug = dbg
+	} else {
+		util.Debug = true
 	}
+	log.Println("debug=", util.Debug)
 }
 
 // Exec executes the wrapped command & also handles CTL-C os signal

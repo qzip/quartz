@@ -22,7 +22,8 @@ type DebugCompParam struct {
 }
 
 type dbgPrint struct {
-	w io.Writer
+	helper seq.CtxHelper
+	w      io.Writer
 }
 
 // Name implements component interface
@@ -57,7 +58,7 @@ func (dc *dbgPrint) Print(ctx context.Context, msg string) {
 
 // Process implements commands.Pipeline method
 func (dc *dbgPrint) Process(ctx context.Context) {
-
+	dc.helper.SetExecStatus(seq.ExSok)
 }
 
 // Name implements component interface
@@ -89,7 +90,7 @@ func (dc *DebugComp) Create(ctx context.Context, helper seq.CtxHelper, param int
 		errChan <- err
 		return nil
 	}
-	dp := &dbgPrint{w: w}
+	dp := &dbgPrint{w: w, helper: helper}
 	helper.SetKeyValue(commands.CfgDebugKey, dp)
 	helper.SetExecStatus(seq.ExSinit)
 	return dp

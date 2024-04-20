@@ -19,7 +19,7 @@ type DebugComp struct {
 }
 
 type DebugCompParam struct {
-	OutFileName string `json:"outFileName"`
+	OutFileName string `json:"outFileName,omitempty"`
 }
 
 // Name implements component interface
@@ -93,6 +93,6 @@ func (dc *DebugComp) getParams(param interface{}) error {
 }
 
 // Process implements commands.Pipeline method
-func (dc *DebugComp) Process(_ context.Context) {
+func (dc *DebugComp) Process(ctx context.Context) {
 
 }

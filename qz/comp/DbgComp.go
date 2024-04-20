@@ -15,11 +15,49 @@ import (
 )
 
 type DebugComp struct {
-	w io.Writer
 }
 
 type DebugCompParam struct {
 	OutFileName string `json:"outFileName,omitempty"`
+}
+
+type dbgPrint struct {
+	w io.Writer
+}
+
+// Name implements component interface
+func (dc *dbgPrint) Name() string {
+	return "comp.DebugPrint"
+}
+
+// Help implements component interface
+func (dc *dbgPrint) Help() string {
+	return `
+	{
+		"component" :  "comp.DebugComp",
+		"param": {
+		  "outFileName": "log.txt"
+		}
+	}`
+}
+
+// ComponentType implements component interface
+func (dc *dbgPrint) ComponentType() reflect.Type {
+	return reflect.TypeOf(dc)
+}
+
+// implements DebugInfoHandler
+func (dc *dbgPrint) Print(ctx context.Context, msg string) {
+	if _, err := fmt.Fprintln(dc.w, msg); err != nil {
+		log.Println(err)
+		ex := &event.ExitEvent{Err: err}
+		event.EvtBusFromContext(ctx).Publish(ctx, ex)
+	}
+}
+
+// Process implements commands.Pipeline method
+func (dc *dbgPrint) Process(ctx context.Context) {
+
 }
 
 // Name implements component interface
@@ -45,54 +83,40 @@ func (dc *DebugComp) ComponentType() reflect.Type {
 
 // Create implements seq.Runner interface
 func (dc *DebugComp) Create(helper seq.CtxHelper, param interface{}, cfg map[string]interface{}, errChan chan error) commands.Pipeline {
-
-	if err := dc.getParams(param); err != nil {
+	w, err := dc.getParams(param)
+	if err != nil {
 		helper.SetExecStatus(seq.ExSerror)
 		errChan <- err
 		return nil
 	}
-	helper.SetKeyValue(commands.CfgDebugKey, dc)
+	dp := &dbgPrint{w: w}
+	helper.SetKeyValue(commands.CfgDebugKey, dp)
 	helper.SetExecStatus(seq.ExSinit)
-	return dc
+	return dp
 }
 
-// implements DebugInfoHandler
-func (dc *DebugComp) Print(ctx context.Context, msg string) {
-	if _, err := fmt.Fprintln(dc.w, msg); err != nil {
-		log.Println(err)
-		ex := &event.ExitEvent{Err: err}
-		event.EvtBusFromContext(ctx).Publish(ctx, ex)
-	}
-}
-
-func (dc *DebugComp) getParams(param interface{}) error {
+func (dc *DebugComp) getParams(param interface{}) (io.Writer, error) {
+	var w io.Writer
 	if param == nil {
-		return fmt.Errorf("DebugComp.getParams: nil param")
+		return nil, fmt.Errorf("DebugComp.getParams: nil param")
 	}
 	dp := &DebugCompParam{}
 	by, err := json.Marshal(param)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	err = json.Unmarshal(by, dp)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	if dp.OutFileName == "" {
-		dc.w = os.Stdout
+		w = os.Stdout
 	} else if strings.EqualFold(dp.OutFileName, "stdio") {
-		dc.w = os.Stdout
+		w = os.Stdout
 	} else {
-		if w, err := os.OpenFile(dp.OutFileName, os.O_RDWR|os.O_CREATE, 0755); err != nil {
-			dc.w = os.Stdout
-		} else {
-			dc.w = w
+		if w, err = os.OpenFile(dp.OutFileName, os.O_RDWR|os.O_CREATE, 0755); err != nil {
+			w = os.Stdout
 		}
 	}
-	return nil
-}
-
-// Process implements commands.Pipeline method
-func (dc *DebugComp) Process(ctx context.Context) {
-
+	return w, nil
 }

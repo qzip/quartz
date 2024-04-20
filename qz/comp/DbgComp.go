@@ -8,6 +8,7 @@ import (
 	"log"
 	"os"
 	"qz/commands"
+	"qz/event"
 	"qz/seq"
 	"reflect"
 	"strings"
@@ -56,9 +57,11 @@ func (dc *DebugComp) Create(helper seq.CtxHelper, param interface{}, cfg map[str
 }
 
 // implements DebugInfoHandler
-func (dc *DebugComp) Print(_ context.Context, msg string) {
+func (dc *DebugComp) Print(ctx context.Context, msg string) {
 	if _, err := fmt.Fprintln(dc.w, msg); err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		ex := &event.ExitEvent{Err: err}
+		event.EvtBusFromContext(ctx).Publish(ctx, ex)
 	}
 }
 

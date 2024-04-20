@@ -82,7 +82,7 @@ func (dc *DebugComp) ComponentType() reflect.Type {
 }
 
 // Create implements seq.Runner interface
-func (dc *DebugComp) Create(helper seq.CtxHelper, param interface{}, cfg map[string]interface{}, errChan chan error) commands.Pipeline {
+func (dc *DebugComp) Create(ctx context.Context, helper seq.CtxHelper, param interface{}, cfg map[string]interface{}, errChan chan error) commands.Pipeline {
 	w, err := dc.getParams(param)
 	if err != nil {
 		helper.SetExecStatus(seq.ExSerror)

@@ -95,7 +95,7 @@ func (dc *DebugComp) Create(ctx context.Context, helper seq.CtxHelper, param int
 	dp := &dbgPrint{w: w, helper: helper}
 	helper.SetKeyValue(commands.CfgDebugKey, dp)
 	helper.SetExecStatus(seq.ExSinit)
-	util.DebugInfo(ctx, "DebugComp.Create: ok")
+	util.DebugInfo(helper, "DebugComp.Create: ok")
 	return dp
 }
 

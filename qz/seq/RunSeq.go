@@ -149,7 +149,7 @@ func (rs *RunSeq) Exec(ctx context.Context, cfg map[string]interface{}, errChan 
 	util.DebugInfo(rs.helper, fmt.Sprintf("RunSeq.Exec: total %v sequence of pipes\n", len(rs.pipes)))
 	for i, v := range rs.pipes {
 		v.Process(rs.helper) // will set context value with ExecStatus
-		util.DebugInfo(rs.helper, fmt.Sprintf("RunSeq.Exec: processed seq[%v] ", i))
+		util.DebugInfo(rs.helper, fmt.Sprintf("RunSeq.Exec: processed seq[%v] status ok=%v", i, rs.helper.StatusOk()))
 		if !rs.helper.StatusOk() {
 			erx := fmt.Errorf("RunSeq.Exec: ERROR breaking off at %v of %v sequence", i+1, len(rs.pipes))
 			util.DebugInfo(rs.helper, erx.Error())

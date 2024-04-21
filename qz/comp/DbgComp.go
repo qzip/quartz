@@ -10,6 +10,7 @@ import (
 	"qz/commands"
 	"qz/event"
 	"qz/seq"
+	"qz/util"
 	"reflect"
 	"strings"
 )
@@ -59,6 +60,7 @@ func (dc *dbgPrint) Print(ctx context.Context, msg string) {
 // Process implements commands.Pipeline method
 func (dc *dbgPrint) Process(ctx context.Context) {
 	dc.helper.SetExecStatus(seq.ExSok)
+	util.DebugInfo(ctx, "dbgPrint.Process: ok")
 }
 
 // Name implements component interface
@@ -93,6 +95,7 @@ func (dc *DebugComp) Create(ctx context.Context, helper seq.CtxHelper, param int
 	dp := &dbgPrint{w: w, helper: helper}
 	helper.SetKeyValue(commands.CfgDebugKey, dp)
 	helper.SetExecStatus(seq.ExSinit)
+	util.DebugInfo(ctx, "DebugComp.Create: ok")
 	return dp
 }
 

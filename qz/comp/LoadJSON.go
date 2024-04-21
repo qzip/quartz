@@ -17,6 +17,7 @@ import (
 	"os"
 	"qz/commands"
 	"qz/seq"
+	"qz/util"
 	"reflect"
 )
 
@@ -86,8 +87,10 @@ func (fl *Fload) Process(ctx context.Context) {
 	if v := fl.load(); v != nil {
 		fl.helper.SetKeyValue(fl.param.DataOutCtxName, v)
 		fl.helper.SetExecStatus(seq.ExSok)
+	} else {
+		fl.helper.SetExecStatus(seq.ExSerror)
 	}
-
+	util.DebugInfo(ctx, fmt.Sprintf("Fload.Process: status ok=%v", fl.helper.StatusOk()))
 }
 
 // Create implements seq.RunSeq method

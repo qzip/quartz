@@ -18,10 +18,10 @@ import (
 	"reflect"
 )
 
-//ExecStatus Execution Status
+// ExecStatus Execution Status
 type ExecStatus string
 
-//Execution Status
+// Execution Status
 const (
 	ExSundef   ExecStatus = "undef"
 	ExSinit    ExecStatus = "init"
@@ -30,14 +30,14 @@ const (
 	ExSok      ExecStatus = "ok"
 )
 
-//Configuration parameter constants
+// Configuration parameter constants
 const (
 	RunSeqParam     = "runners"
 	ComponentSubKey = "component"
 	ParamSubKey     = "param"
 )
 
-//CtxHelper parent context setter helper
+// CtxHelper parent context setter helper
 type CtxHelper interface {
 	context.Context
 	SetExecStatus(status ExecStatus)
@@ -46,17 +46,17 @@ type CtxHelper interface {
 	SetKeyValue(key interface{}, val interface{})
 }
 
-//CtxHelperTypeName get the interface path
+// CtxHelperTypeName get the interface path
 func CtxHelperTypeName() string {
 	return reflect.TypeOf((*CtxHelper)(nil)).Elem().String()
 }
 
-//KeyName  context key name
+// KeyName  context key name
 func (xs ExecStatus) KeyName() string {
 	return CtxHelperTypeName() + ".ExecStatus"
 }
 
-//ContextHelper extends commands.ContextHelper
+// ContextHelper extends commands.ContextHelper
 type ContextHelper struct {
 	*commands.ContextHelper
 }
@@ -67,7 +67,7 @@ func (ch *ContextHelper) SetExecStatus(status ExecStatus) {
 
 }
 
-//GetExecStatus gets the execution status
+// GetExecStatus gets the execution status
 func (ch *ContextHelper) GetExecStatus() (status ExecStatus) {
 	status = ExSundef
 	sts, ok := ch.KeyValMap()[status.KeyName()]
@@ -79,17 +79,17 @@ func (ch *ContextHelper) GetExecStatus() (status ExecStatus) {
 	return
 }
 
-//StatusOk true if exec status is set to ok
+// StatusOk true if exec status is set to ok
 func (ch *ContextHelper) StatusOk() bool {
 	return ch.GetExecStatus() == ExSok
 }
 
-//SetKeyValue sets the context
+// SetKeyValue sets the context
 func (ch *ContextHelper) SetKeyValue(key interface{}, val interface{}) {
 	ch.KeyValMap()[key] = val
 }
 
-//NewContextHelper creates an instance of Context helper
+// NewContextHelper creates an instance of Context helper
 func NewContextHelper(ctx context.Context) *ContextHelper {
 	ch := &ContextHelper{ContextHelper: commands.NewContextHelper(ctx)}
 	ch.SetExecStatus(ExSinit)
@@ -104,7 +104,7 @@ type Runner interface {
 
 //***** command interface methods *****
 
-//RunSeq sequence of pipelines, that are executed if the previous
+// RunSeq sequence of pipelines, that are executed if the previous
 // stage is successful
 type RunSeq struct {
 	pipes   []commands.Pipeline
@@ -117,7 +117,7 @@ func (rs *RunSeq) Name() string {
 	return "seq.RunSeq"
 }
 
-//Help implements command interface method
+// Help implements command interface method
 func (rs *RunSeq) Help() string {
 	return `
 	  # cmd.RunSeq: executes the runners in sequence,
@@ -137,18 +137,19 @@ func (rs *RunSeq) Help() string {
 	`
 }
 
-//Exec executes the stages, if the prev. stage is successful
+// Exec executes the stages, if the prev. stage is successful
 func (rs *RunSeq) Exec(ctx context.Context, cfg map[string]interface{}, errChan chan error) {
 	rs.helper = NewContextHelper(ctx)
 	rs.errChan = errChan
 	if err := rs.setupRunners(rs.helper, cfg); err != nil {
-		util.DebugInfo(ctx, err.Error())
+		util.DebugInfo(rs.helper, err.Error())
 		errChan <- err
 		return
 	}
-	util.DebugInfo(ctx, fmt.Sprintf("RunSeq.Exec: total %v sequence of pipes\n", len(rs.pipes)))
+	util.DebugInfo(rs.helper, fmt.Sprintf("RunSeq.Exec: total %v sequence of pipes\n", len(rs.pipes)))
 	for i, v := range rs.pipes {
 		v.Process(rs.helper) // will set context value with ExecStatus
+		util.DebugInfo(rs.helper, fmt.Sprintf("RunSeq.Exec: processed seq[%v] ", i))
 		if !rs.helper.StatusOk() {
 			erx := fmt.Errorf("RunSeq.Exec: ERROR breaking off at %v of %v sequence", i+1, len(rs.pipes))
 			util.DebugInfo(rs.helper, erx.Error())
@@ -156,7 +157,7 @@ func (rs *RunSeq) Exec(ctx context.Context, cfg map[string]interface{}, errChan 
 			break
 		}
 	}
-	return
+
 }
 
 func (rs *RunSeq) setupRunners(ctx context.Context, cfg map[string]interface{}) error {
@@ -198,6 +199,7 @@ func (rs *RunSeq) setupRunners(ctx context.Context, cfg map[string]interface{}) 
 			return commands.NewFatalError(erx.Error())
 		}
 		rs.pipes = append(rs.pipes, pipe)
+		util.DebugInfo(rs.helper, fmt.Sprintf("RunSeq.setupRunners: appended pipeline seq[%v] component %v", i, cname))
 	}
 	return nil
 }

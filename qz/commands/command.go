@@ -16,12 +16,14 @@ package commands
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"os"
 	"os/signal"
 	"qz/util"
 	"reflect"
 	"strings"
+	"time"
 
 	//"sync"
 	"syscall"
@@ -124,7 +126,8 @@ func (run *CommandRunner) setdbg(cfg map[string]interface{}) {
 // Exec executes the wrapped command & also handles CTL-C os signal
 func (run *CommandRunner) Exec(pctx context.Context, cfg map[string]interface{}, errCh chan error) {
 	run.setdbg(cfg)
-	util.DebugInfo(pctx, "CommandRunner.Exec: Exec")
+	startTm := time.Now()
+	util.DebugInfo(pctx, "CommandRunner.Exec: Exec start")
 	ctx, err := BuildCtxHandlers(pctx, cfg)
 	if err != nil {
 		errCh <- NewFatalError("CommandRunner.Exec(handlers): " + err.Error())
@@ -148,7 +151,8 @@ func (run *CommandRunner) Exec(pctx context.Context, cfg map[string]interface{},
 		}
 	}() // do not wait on this
 	run.Cmd.Exec(ctx, cfg, errCh)
-	util.DebugInfo(pctx, "CommandRunner.Exec: ret")
+	elapsed := time.Since(startTm)
+	util.DebugInfo(pctx, fmt.Sprintf("CommandRunner.Exec: ret, execution duration %v", elapsed))
 }
 
 // Name returns the warpped command name

@@ -14,7 +14,7 @@ type AlgoTxn2DbFact struct {
 
 // implements qz/command/ComponentFactory
 func (anf *AlgoTxn2DbFact) Name() string {
-	return "comp.DoltInsertFactory"
+	return "comp.AlgoTxn2DbFact"
 }
 
 // implements qz/command/ComponentFactory

@@ -60,7 +60,7 @@ func (an *AlgoTxn2Db) Process(ctx context.Context) {
 
 	}
 	defer pstmt.Close()
-	txndata, err := json.MarshalIndent(txn.TxnRes, "\n", " ")
+	txndata, err := json.MarshalIndent(txn, "\n", " ")
 	if err != nil {
 		an.helper.SetExecStatus(seq.ExSerror)
 		an.errChan <- err

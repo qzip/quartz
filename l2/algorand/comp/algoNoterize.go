@@ -34,8 +34,8 @@ type AlgoTransaction struct {
 
 type AlgoNotarize struct {
 	AlgoKeyMnemonic string `json:"algoKeyMnemonic,omitempty"`
-	AlgodAddress    string `json:"algodAddress,omitempty"`
-	AlgodToken      string `json:"algodToken,omitempty"`
+	AlgodAddress    string `json:"algodAddress,omitempty"` // ~/Node/algod.net
+	AlgodToken      string `json:"algodToken,omitempty"`   // ~/Node/algod.token
 	DataInCtxName   string `json:"noteKey,omitempty"`
 	DataOutCtxName  string `json:"confirmedTxnKey,omitempty"`
 	MetadataCtxName string `json:"metadataKey,omitempty"`

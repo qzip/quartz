@@ -33,7 +33,7 @@ func (an *AlgoTxn2File) Process(ctx context.Context) {
 	if an.DataInCtxName == "" {
 		an.DataInCtxName = DataOutCtxName // from algoNotarize upstream
 	}
-	txn, ok := an.helper.Value(DataInCtxName).(AlgoTransaction)
+	txn, ok := an.helper.Value(DataInCtxName).(*AlgoTransaction)
 	if !ok {
 		an.helper.SetExecStatus(seq.ExSerror)
 		an.errChan <- fmt.Errorf("AlgoTxn2Db.Process: %s not set of type AlgoTransaction in helper ontext", an.DataInCtxName)

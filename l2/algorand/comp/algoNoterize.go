@@ -145,7 +145,7 @@ func (an *AlgoNotarize) Process(ctx context.Context) {
 		TxnRes:    confirmedTxn,
 		Metadata:  an.helper.Value(an.MetadataCtxName), // corelates the notarized txn with its context
 	}
-	an.helper.SetKeyValue(an.DataOutCtxName, *txn)
+	an.helper.SetKeyValue(an.DataOutCtxName, txn)
 	an.helper.SetExecStatus(seq.ExSok)
 }
 

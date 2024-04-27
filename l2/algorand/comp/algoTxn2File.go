@@ -33,10 +33,10 @@ func (an *AlgoTxn2File) Process(ctx context.Context) {
 	if an.DataInCtxName == "" {
 		an.DataInCtxName = DataOutCtxName // from algoNotarize upstream
 	}
-	txn, ok := an.helper.Value(DataInCtxName).(*AlgoTransaction)
-	if !ok {
+	txn := an.helper.Value(DataInCtxName) //.(*AlgoTransaction)
+	if txn != nil {
 		an.helper.SetExecStatus(seq.ExSerror)
-		an.errChan <- fmt.Errorf("AlgoTxn2Db.Process: %s not set of type AlgoTransaction in helper ontext", an.DataInCtxName)
+		an.errChan <- fmt.Errorf("AlgoTxn2Db.Process: %s  is nil in helper context", an.DataInCtxName)
 		return
 	}
 	p, err := json.MarshalIndent(txn, "\n", " ")

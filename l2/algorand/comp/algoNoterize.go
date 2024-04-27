@@ -3,7 +3,6 @@ package comp
 import (
 	"context"
 	"crypto/ed25519"
-	"encoding/base64"
 	"fmt"
 	"qz/seq"
 	"qz/util"
@@ -11,17 +10,19 @@ import (
 	"github.com/algorand/go-algorand-sdk/v2/client/v2/algod"
 	"github.com/algorand/go-algorand-sdk/v2/client/v2/common/models"
 	"github.com/algorand/go-algorand-sdk/v2/crypto"
+	"github.com/algorand/go-algorand-sdk/v2/mnemonic"
 	"github.com/algorand/go-algorand-sdk/v2/transaction"
 	"github.com/algorand/go-algorand-sdk/v2/types"
 )
 
 const (
-	AlgodAddress    = "http://localhost:4001"
+	AlgodAddress    = "http://localhost:8080" // goal network create --devMode
 	DataInCtxName   = "data"
 	DataOutCtxName  = "confirmedTxn"
 	MetadataCtxName = "metadata"
 	Namespace       = "quartz.l2.algorand.comp.AlgoTransaction"
 	W3CdidPrefix    = "did:algorand:txn:"
+	AlgoKeyMnemonic = "$ALGO_MNEMONIC"
 )
 
 type AlgoTransaction struct {
@@ -32,14 +33,14 @@ type AlgoTransaction struct {
 }
 
 type AlgoNotarize struct {
-	Base64PrivateKey string `json:"base64PrivateKey"`
-	AlgodAddress     string `json:"algodAddress,omitempty"`
-	AlgodToken       string `json:"algodToken,omitempty"`
-	DataInCtxName    string `json:"noteKey,omitempty"`
-	DataOutCtxName   string `json:"confirmedTxnKey,omitempty"`
-	MetadataCtxName  string `json:"metadataKey,omitempty"`
-	W3CdidPrefix     string `json:"w3cdidPrefix,omitempty"`
-	Namespace        string `json:"namespace,omitempty"`
+	AlgoKeyMnemonic string `json:"algoKeyMnemonic,omitempty"`
+	AlgodAddress    string `json:"algodAddress,omitempty"`
+	AlgodToken      string `json:"algodToken,omitempty"`
+	DataInCtxName   string `json:"noteKey,omitempty"`
+	DataOutCtxName  string `json:"confirmedTxnKey,omitempty"`
+	MetadataCtxName string `json:"metadataKey,omitempty"`
+	W3CdidPrefix    string `json:"w3cdidPrefix,omitempty"`
+	Namespace       string `json:"namespace,omitempty"`
 
 	//private fields
 	helper      seq.CtxHelper
@@ -80,8 +81,12 @@ func (an *AlgoNotarize) Process(ctx context.Context) {
 	if an.MetadataCtxName == "" {
 		an.MetadataCtxName = MetadataCtxName
 	}
+	if an.AlgoKeyMnemonic == "" {
+		an.AlgoKeyMnemonic = AlgoKeyMnemonic
+	}
 	var err error
-	if an.Base64PrivateKey, err = util.ReplaceEnv(an.Base64PrivateKey); err != nil {
+
+	if an.AlgoKeyMnemonic, err = util.ReplaceEnv(an.AlgoKeyMnemonic); err != nil {
 		an.helper.SetExecStatus(seq.ExSerror)
 		an.errChan <- err
 		return
@@ -92,13 +97,12 @@ func (an *AlgoNotarize) Process(ctx context.Context) {
 		an.errChan <- err
 		return
 	}
-	if sDec, err := base64.StdEncoding.DecodeString(an.Base64PrivateKey); err != nil {
+	if an.pvtKey, err = mnemonic.ToPrivateKey(an.AlgoKeyMnemonic); err != nil {
 		an.helper.SetExecStatus(seq.ExSerror)
 		an.errChan <- err
 		return
-	} else {
-		an.pvtKey = ed25519.NewKeyFromSeed(sDec)
 	}
+
 	if an.account, err = crypto.AccountFromPrivateKey(an.pvtKey); err != nil {
 		an.helper.SetExecStatus(seq.ExSerror)
 		an.errChan <- err

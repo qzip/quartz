@@ -167,7 +167,7 @@ func (an *AlgoNotarize) createTxn(ctx context.Context) (*types.Transaction, erro
 	}
 	tx, err := transaction.MakePaymentTxn(
 		an.account.Address.String(), an.account.Address.String(),
-		0, []byte(note.(string)), an.account.Address.String(),
+		0, []byte(note.(string)), "", //an.account.Address.String(),
 		sp,
 	)
 	return &tx, err

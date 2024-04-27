@@ -145,6 +145,13 @@ func (an *AlgoNotarize) Process(ctx context.Context) {
 		TxnRes:    confirmedTxn,
 		Metadata:  an.helper.Value(an.MetadataCtxName), // corelates the notarized txn with its context
 	}
+	/*p, err := json.MarshalIndent(txn, "\n", " ")
+	if err != nil {
+		an.helper.SetExecStatus(seq.ExSerror)
+		an.errChan <- err
+		return
+	}*/
+	//fmt.Println(string(p))
 	an.helper.SetKeyValue(an.DataOutCtxName, txn)
 	an.helper.SetExecStatus(seq.ExSok)
 }

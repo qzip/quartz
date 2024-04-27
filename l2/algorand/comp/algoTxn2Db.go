@@ -8,7 +8,7 @@ import (
 	"qz/seq"
 	"time"
 
-	_ "github.com/dolthub/driver"
+	_ "github.com/go-sql-driver/mysql"
 )
 
 type AlgoTxn2Db struct {
@@ -36,13 +36,13 @@ func (an *AlgoTxn2Db) Process(ctx context.Context) {
 	if an.DataInCtxName == "" {
 		an.DataInCtxName = DataOutCtxName // from algoNotarize upstream
 	}
-	txn, ok := an.helper.Value(DataInCtxName).(AlgoTransaction)
-	if !ok {
+	txn := an.helper.Value(DataInCtxName).(*AlgoTransaction)
+	if txn == nil {
 		an.helper.SetExecStatus(seq.ExSerror)
-		an.errChan <- fmt.Errorf("AlgoTxn2Db.Process: %s not set of type AlgoTransaction in helper ontext", an.DataInCtxName)
+		an.errChan <- fmt.Errorf("AlgoTxn2Db.Process: %s  is nil in helper context", an.DataInCtxName)
 		return
 	}
-	if db, err := sql.Open("dolt", an.DbConnection); err != nil {
+	if db, err := sql.Open("mysql", an.DbConnection); err != nil {
 		an.helper.SetExecStatus(seq.ExSerror)
 		an.errChan <- err
 		return
@@ -60,15 +60,15 @@ func (an *AlgoTxn2Db) Process(ctx context.Context) {
 
 	}
 	defer pstmt.Close()
-	txndata, err := json.MarshalIndent(txn, "\n", " ")
+
+	p, err := json.MarshalIndent(txn, "\n", " ")
 	if err != nil {
 		an.helper.SetExecStatus(seq.ExSerror)
 		an.errChan <- err
 		return
 	}
-
 	tmstamp := time.Now()
-	if _, err = pstmt.ExecContext(ctx, txn.W3Cdid, txn.Namespace, txndata, tmstamp); err != nil {
+	if _, err = pstmt.ExecContext(ctx, txn.W3Cdid, txn.Namespace, p, tmstamp); err != nil {
 		an.helper.SetExecStatus(seq.ExSerror)
 		an.errChan <- err
 		return

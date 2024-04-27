@@ -33,22 +33,23 @@ func (an *AlgoTxn2File) Process(ctx context.Context) {
 	if an.DataInCtxName == "" {
 		an.DataInCtxName = DataOutCtxName // from algoNotarize upstream
 	}
-	txn := an.helper.Value(DataInCtxName) //.(*AlgoTransaction)
+	txn := an.helper.Value(an.DataInCtxName).(*AlgoTransaction)
 	if txn == nil {
 		an.helper.SetExecStatus(seq.ExSerror)
 		an.errChan <- fmt.Errorf("AlgoTxn2Db.Process: %s  is nil in helper context", an.DataInCtxName)
 		return
+	}
+
+	an.open()
+	f, ok := (an.w).(*os.File)
+	if ok {
+		defer f.Close()
 	}
 	p, err := json.MarshalIndent(txn, "\n", " ")
 	if err != nil {
 		an.helper.SetExecStatus(seq.ExSerror)
 		an.errChan <- err
 		return
-	}
-	an.open()
-	f, ok := (an.w).(*os.File)
-	if ok {
-		defer f.Close()
 	}
 	if _, er := an.w.Write(p); er != nil {
 		an.helper.SetExecStatus(seq.ExSerror)

@@ -36,7 +36,7 @@ func (an *AlgoTxn2Db) Process(ctx context.Context) {
 	if an.DataInCtxName == "" {
 		an.DataInCtxName = DataOutCtxName // from algoNotarize upstream
 	}
-	txn := an.helper.Value(DataInCtxName).(*AlgoTransaction)
+	txn := an.helper.Value(an.DataInCtxName).(*AlgoTransaction)
 	if txn == nil {
 		an.helper.SetExecStatus(seq.ExSerror)
 		an.errChan <- fmt.Errorf("AlgoTxn2Db.Process: %s  is nil in helper context", an.DataInCtxName)

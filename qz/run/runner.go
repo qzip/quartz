@@ -13,13 +13,18 @@ import (
 	"time"
 )
 
-func Runner(cfgFile string) {
-
-	cfg, err := readCfg(os.Args[1])
+func RunEmbeded(jsonb []byte) {
+	cfg := make(map[string]interface{}, 0)
+	err := json.Unmarshal(jsonb, &cfg)
 	if err != nil {
 		log.Fatal(fmt.Errorf("main.readCfg: %s", err.Error()))
 		return
 	}
+	run(cfg)
+}
+
+func run(cfg map[string]interface{}) {
+
 	cmd := fmt.Sprintf("%v", cfg[commands.CmdKey])
 	if cmd == "<nil>" {
 		log.Fatal(fmt.Errorf("[%s] not found in config %s", commands.CmdKey, os.Args[1]))
@@ -59,6 +64,16 @@ func Runner(cfgFile string) {
 	run.Exec(ctx, cfg, errChan)
 	errChan <- commands.NewFatalError("OK: Exit runcmd")
 	util.DebugInfo(ctx, "qz: main ret")
+}
+
+func Runner(cfgFile string) {
+
+	cfg, err := readCfg(os.Args[1])
+	if err != nil {
+		log.Fatal(fmt.Errorf("main.readCfg: %s", err.Error()))
+		return
+	}
+	run(cfg)
 }
 
 func readCfg(fname string) (cfg map[string]interface{}, err error) {

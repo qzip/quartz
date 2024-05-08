@@ -24,6 +24,7 @@ import (
 	"net/http"
 	"os"
 	"qz/commands"
+	"reflect"
 	"strconv"
 
 	"golang.org/x/crypto/acme/autocert"
@@ -49,7 +50,7 @@ type SrvHTTP struct {
 
 // Name implements qz/commands/Commander interface
 func (srv *SrvHTTP) Name() string {
-	return "cmd.SrvHTTP"
+	return reflect.TypeOf(*srv).String()
 }
 
 // Help implements qz/commands/Commander interface

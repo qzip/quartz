@@ -60,7 +60,7 @@ func (fs *FlMasterSaver) Save(ctx context.Context, param interface{}, cfg map[st
 	}
 }
 
-func (fs *FlMasterSaver) open(ctx context.Context, param interface{}, cfg map[string]interface{}) error {
+func (fs *FlMasterSaver) open(ctx context.Context, param interface{}, _ map[string]interface{}) error {
 	if param == nil {
 		fs.w = os.Stdout
 	} else {

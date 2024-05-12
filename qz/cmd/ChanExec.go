@@ -122,7 +122,7 @@ func (e *ChanExec) Help() string {
 	return `
 	  {
 		"desription" : "
-		
+		 Creates a channel pipeline. 
 		",
 		"command": "cmd.ChanExec",
 		"debug": true,

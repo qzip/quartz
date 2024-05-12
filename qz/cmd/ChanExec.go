@@ -74,28 +74,17 @@ func (e *ChanExec) Exec(ctx context.Context, cfg map[string]interface{}, errCh c
 }
 
 func (e *ChanExec) spinOff(ctx context.Context, errCh chan error) {
-
-	schan, err := e.source.Chan(ctx)
-	if err != nil {
-		errCh <- commands.NewFatalError(err.Error())
-		return
-	}
+	cctx, cancel := context.WithCancel(ctx)
+	schan := e.source.Chan(cctx, errCh, cancel)
 
 	for _, t := range e.transformers {
-		schan, err = t.Chan(ctx, schan)
-		if err != nil {
-			errCh <- commands.NewFatalError(err.Error())
-			return
-		}
+		schan = t.Chan(cctx, schan, errCh, cancel)
 	}
-	if err = e.sink.Chan(ctx, schan); err != nil {
-		errCh <- commands.NewFatalError(err.Error())
-		return
-	}
+	e.sink.Chan(cctx, schan, errCh, cancel)
 
 	var wg sync.WaitGroup
 	f := func(p commands.Pipeline) {
-		p.Process(ctx)
+		p.Process(cctx)
 		wg.Done()
 	}
 	wg.Add(2)

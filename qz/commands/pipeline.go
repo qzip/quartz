@@ -18,15 +18,15 @@ type Pipeline interface {
 
 type Source interface {
 	Pipeline
-	Chan(ctx context.Context) (chan interface{}, error)
+	Chan(ctx context.Context, errCh chan error, cancel context.CancelFunc) chan interface{}
 }
 
 type Sink interface {
 	Pipeline
-	Chan(ctx context.Context, source chan interface{}) error
+	Chan(ctx context.Context, source chan interface{}, errCh chan error, cancel context.CancelFunc)
 }
 
 type Transformer interface {
 	Pipeline
-	Chan(ctx context.Context, source chan interface{}) (sink chan interface{}, err error)
+	Chan(ctx context.Context, source chan interface{}, errCh chan error, cancel context.CancelFunc) (sink chan interface{})
 }

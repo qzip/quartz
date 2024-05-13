@@ -30,6 +30,7 @@ const (
 	transformersKey = "transformers"
 )
 
+// Exec implements qz/commands.Commander Exec method. Creates channel driven pipeline
 func (e *ChanExec) Exec(ctx context.Context, cfg map[string]interface{}, errCh chan error) {
 	var ok bool
 

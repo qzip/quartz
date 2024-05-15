@@ -143,9 +143,13 @@ func (p *Parser) endMultiLine() {
 		curBlock.Nodes = append(curBlock.Nodes, *p.multiLine)
 	} else {
 		keyln := &curBlock.Nodes[len(curBlock.Nodes)-1]
-		for _, kl := range p.multiLine.Lines {
-			keyln.Lines = append(keyln.Lines, kl)
-		}
+
+		keyln.Lines = append(keyln.Lines, p.multiLine.Lines...)
+		/*
+			for _, kl := range p.multiLine.Lines {
+				keyln.Lines = append(keyln.Lines, kl)
+			}
+		*/
 
 	}
 

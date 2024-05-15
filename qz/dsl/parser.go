@@ -18,7 +18,7 @@ type Parser struct {
 	curLine   int
 }
 
-//DSL Keywords
+// DSL Keywords
 const (
 	Comment        = "#"
 	BlockStart     = "BEGIN"
@@ -31,7 +31,7 @@ type stack struct {
 	ele []int
 }
 
-//NewParser Instantiates a new Parser.
+// NewParser Instantiates a new Parser.
 // Block 0 is the root block. "__root__"
 func NewParser(in io.Reader) *Parser {
 	p := &Parser{
@@ -44,7 +44,7 @@ func NewParser(in io.Reader) *Parser {
 	return p
 }
 
-//Parse the DSL
+// Parse the DSL
 func (p *Parser) Parse(ctx context.Context) ([]Block, error) {
 	p.multiLine = nil
 	for p.curLine = 1; ; p.curLine++ {
@@ -186,7 +186,7 @@ func (p *Parser) appendLine(ctx context.Context, ln string) {
 func (s *stack) push(blockNdx int) {
 	s.ele = append(s.ele, blockNdx)
 }
-func (s *stack) pop() (top int, ok bool) {
+func (s *stack) pop() (top int) {
 	n := len(s.ele) - 1 // Top element
 	if n >= 0 {
 		top = s.ele[n]
@@ -202,6 +202,9 @@ func (s *stack) peek() (top int, ok bool) {
 	}
 	return
 }
+
+/*
 func (s *stack) depth() int {
 	return len(s.ele)
 }
+*/

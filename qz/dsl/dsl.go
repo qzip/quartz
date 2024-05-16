@@ -1,18 +1,18 @@
-//Package dsl Domain Specific Language
+// Package dsl Domain Specific Language
 package dsl
 
 import (
 	"strings"
 )
 
-//Node can be a Block or a KeyLinesArr
+// Node can be a Block or a KeyLinesArr
 type Node interface {
 	Name() string
 }
 
 //TODO: make Block part of Array (Blocks)
 
-//Block  BEGIN <name> \n ..key lines. END
+// Block  BEGIN <name> \n ..key lines. END
 // # is a comment line
 // Keywords must be at the begining of a new line
 type Block struct {
@@ -26,7 +26,7 @@ const (
 	RootBlock = "__root__"
 )
 
-//KeyLines keyword at start of line followed by 1 or multi lines
+// KeyLines keyword at start of line followed by 1 or multi lines
 // Multi lines start & end with [[ ]] at begining of a new line
 type KeyLines struct {
 	Key    string   `json:"name"`
@@ -44,11 +44,11 @@ func (n *Block) Name() string {
 	return n.Key
 }
 
-//Blocks block array for operating on array of blocks
+// Blocks block array for operating on array of blocks
 type Blocks []Block
 
-//ChilderenOf collect the children
-func (bx Blocks) ChilderenOf(rootNdx int) (childeren []int) {
+// ChilderenOf collect the children
+func (bx Blocks) ChildrenOf(rootNdx int) (childeren []int) {
 	childeren = make([]int, 0)
 	if rootNdx >= len(bx) {
 		return nil
@@ -69,17 +69,52 @@ func (bx Blocks) ChilderenOf(rootNdx int) (childeren []int) {
 	return
 }
 
-//TreeOfBlocks block array to tree
+// TreeOfBlocks block array to tree
 type TreeOfBlocks struct {
-	Node      *Block
-	Childeren []*Block
+	Node     *Block
+	Children []*TreeOfBlocks
+	index    int
 }
 
-//BuildTreeOfBlocks  block array to tree
+func (bx Blocks) Tree() *TreeOfBlocks {
+	barr := []Block(bx)
+	tarr := make([]*TreeOfBlocks, len(barr))
+	//tob := &TreeOfBlocks{Node: &barr[0], Children: make([]*TreeOfBlocks, 0)}
+	for n, blk := range barr {
+		tarr[n].Node = &blk
+		tarr[n].index = n
+		if children := bx.ChildrenOf(n); children != nil {
+			tarr[n].Children = make([]*TreeOfBlocks, len(children))
+			for c, b := range children {
+				tarr[n].Children[c].index = b
+				tarr[n].Children[c].Node = &barr[b]
+			}
+		}
+
+	}
+	return tarr[0]
+}
+
+/*
+// BuildTreeOfBlocks  block array to tree
 func BuildTreeOfBlocks(barr []Block) *TreeOfBlocks {
+	if len(barr) == 0 {
+		return nil
+	}
 	tob := &TreeOfBlocks{}
+	tob.Node = &barr[0]
+	for i, _ := range barr {
+		if children := Blocks(barr).ChildrenOf(i); children != nil {
+			tob.Children = make([]*Block, len(children))
+			for j, k := range children {
+				tob.Children[j] = &barr[k]
+
+			}
+		}
+	}
 	return tob
 }
+*/
 
 /*
 //MarshalJSON custom marshal
@@ -108,7 +143,7 @@ func (n *KeyLines) Name() string {
 	return n.Key
 }
 
-//Lines2String lines to string
+// Lines2String lines to string
 func (n *KeyLines) Lines2String() string {
 	var b strings.Builder
 	for i := 1; i < len(n.Lines); i++ {

@@ -97,27 +97,6 @@ func (bx Blocks) Tree() *TreeOfBlocks {
 }
 
 /*
-// BuildTreeOfBlocks  block array to tree
-func BuildTreeOfBlocks(barr []Block) *TreeOfBlocks {
-	if len(barr) == 0 {
-		return nil
-	}
-	tob := &TreeOfBlocks{}
-	tob.Node = &barr[0]
-	for i, _ := range barr {
-		if children := Blocks(barr).ChildrenOf(i); children != nil {
-			tob.Children = make([]*Block, len(children))
-			for j, k := range children {
-				tob.Children[j] = &barr[k]
-
-			}
-		}
-	}
-	return tob
-}
-*/
-
-/*
 //MarshalJSON custom marshal
 func (n *Block) MarshalJSON() ([]byte, error) {
 	var b bytes.Buffer

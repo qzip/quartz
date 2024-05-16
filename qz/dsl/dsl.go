@@ -49,10 +49,11 @@ type Blocks []Block
 
 // ChilderenOf collect the children
 func (bx Blocks) ChildrenOf(rootNdx int) (childeren []int) {
-	childeren = make([]int, 0)
 	if rootNdx >= len(bx) {
 		return nil
 	}
+	childeren = make([]int, 0)
+
 	barr := []Block(bx)
 	for n, blk := range barr {
 		if n == 0 {

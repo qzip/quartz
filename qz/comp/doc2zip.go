@@ -5,11 +5,11 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"io"
 	"os"
 
 	//"html/template"
 	"bc/cas"
-	"io/ioutil"
 	"mime"
 	"net/http"
 	"qz/commands"
@@ -157,9 +157,9 @@ type doc2zipAST struct {
 	blk  []dsl.Block
 	//keyvals map[string]string
 	zipFlname string
-	subCol    string
-	macros    map[string][]byte
-	files     []Zfile
+	//subCol    string
+	macros map[string][]byte
+	files  []Zfile
 }
 
 func (za *doc2zipAST) Block2Ast(ctx context.Context) (err error) {
@@ -193,7 +193,7 @@ func (za *doc2zipAST) Block2Ast(ctx context.Context) (err error) {
 	}
 	util.DebugInfo(ctx, "doc2zipAST.Block2Ast: Processed Node 0")
 	// get children
-	children := (dsl.Blocks(za.blk)).ChilderenOf(0)
+	children := (dsl.Blocks(za.blk)).ChildrenOf(0)
 	util.DebugInfo(ctx, fmt.Sprintf("doc2zipAST.Block2Ast: Processing child nodes %v", len(children)))
 	for _, ndx := range children {
 		blk := za.blk[ndx]
@@ -226,7 +226,7 @@ func (za *doc2zipAST) copyzip(ctx context.Context, zipName string) error {
 		}
 		//TODO: use go routine
 		zf := Zfile{path: f.Name}
-		if zf.content, err = ioutil.ReadAll(rc); err != nil {
+		if zf.content, err = io.ReadAll(rc); err != nil {
 			return err
 		}
 		za.files = append(za.files, zf)

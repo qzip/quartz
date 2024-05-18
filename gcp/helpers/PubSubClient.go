@@ -29,7 +29,7 @@ const (
 	CfgParamCredPath      = "credentialsPath"
 )
 
-//GcpPubSubClientHelper GcpPubSub client
+// GcpPubSubClientHelper GcpPubSub client
 type GcpPubSubClientHelper struct {
 	psClient *pubsub.Client
 	params   *ParamGcpPubSubClientHelper
@@ -44,12 +44,12 @@ type ParamGcpPubSubClientHelper struct {
 	TimeDurationSec time.Duration `json:"timeDurationSec,omitempty"`
 }
 
-//Name implements commands.Components Methods
+// Name implements commands.Components Methods
 func (hlpr *GcpPubSubClientHelper) Name() string {
 	return "GcpPubSub.Client"
 }
 
-//Help implements commands.Components Methods
+// Help implements commands.Components Methods
 func (hlpr *GcpPubSubClientHelper) Help() string {
 	return `
 	 Helper for GcpPubSub client: all parameters, except projectID are optional
@@ -61,12 +61,12 @@ func (hlpr *GcpPubSubClientHelper) Help() string {
 	`
 }
 
-//ComponentType implements commands.Components Methods
+// ComponentType implements commands.Components Methods
 func (hlpr *GcpPubSubClientHelper) ComponentType() reflect.Type {
 	return reflect.TypeOf(hlpr)
 }
 
-//CreateHelper implements commands.HelperFactory Methods
+// CreateHelper implements commands.HelperFactory Methods
 func (hlpr *GcpPubSubClientHelper) CreateHelper(ctx context.Context, param interface{}, cfg map[string]interface{}) (psClient interface{}, err error) {
 	if hlpr.psClient != nil {
 		psClient = hlpr.psClient
@@ -111,7 +111,7 @@ func (hlpr *GcpPubSubClientHelper) open(ctx context.Context, param interface{}, 
 	}
 	return nil
 }
-func (hlpr *GcpPubSubClientHelper) getParams(ctx context.Context, param interface{}, cfg map[string]interface{}) error {
+func (hlpr *GcpPubSubClientHelper) getParams(_ context.Context, param interface{}, cfg map[string]interface{}) error {
 	/*if param == nil {
 		return fmt.Errorf("GcpPubSubClientHelper.open: nil param")
 	}*/

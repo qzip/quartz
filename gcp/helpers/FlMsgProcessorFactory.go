@@ -5,20 +5,20 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"os"
 	"reflect"
 	"strings"
 
-	"alo/digicon"
+	"digicon"
 
 	"gocloud.dev/pubsub"
 )
 
-//FlMsgProcessorFactory GCP Pub Sub Message to File
+// FlMsgProcessorFactory GCP Pub Sub Message to File
 type FlMsgProcessorFactory struct {
 }
 
-//CreateHelper creates a cmd.MsgConsumerHelper Object
+// CreateHelper creates a cmd.MsgConsumerHelper Object
 func (fs *FlMsgProcessorFactory) CreateHelper(ctx context.Context, param interface{}, cfg map[string]interface{}) (hlpr interface{}, err error) {
 	fl, ok := param.(string)
 	if !ok {
@@ -32,18 +32,18 @@ func (fs *FlMsgProcessorFactory) CreateHelper(ctx context.Context, param interfa
 	return
 }
 
-//Msg2FileHelper implements cmd.MsgConsumerHelper saves msessage to file
+// Msg2FileHelper implements cmd.MsgConsumerHelper saves msessage to file
 type Msg2FileHelper struct {
 	fl string
 }
 
-//Open implements cmd.MsgConsumerHelper method
+// Open implements cmd.MsgConsumerHelper method
 func (m2f *Msg2FileHelper) Open(ctx context.Context) error {
 	// nothing to open, dummy call for interface implementation
 	return nil
 }
 
-//Consume implements cmd.MsgConsumerHelper method
+// Consume implements cmd.MsgConsumerHelper method
 func (m2f *Msg2FileHelper) Consume(ctx context.Context, m *pubsub.Message) (err error) {
 	msg2fl := make(map[string]interface{}, 0)
 	if m.Metadata != nil {
@@ -62,13 +62,13 @@ func (m2f *Msg2FileHelper) Consume(ctx context.Context, m *pubsub.Message) (err 
 	}
 	fln := hex.EncodeToString(digicon.ComputeHash(msg2fl))
 
-	if err = ioutil.WriteFile(m2f.fl+fln+".json", p, 0644); err != nil {
+	if err = os.WriteFile(m2f.fl+fln+".json", p, 0644); err != nil {
 		return
 	}
 	return nil
 }
 
-//Close implements cmd.MsgConsumerHelper method
+// Close implements cmd.MsgConsumerHelper method
 func (m2f *Msg2FileHelper) Close(ctx context.Context) {
 	//dummy,nothing to close.
 }

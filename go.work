@@ -13,5 +13,7 @@ use (
 	./shake
         //./l2/algorand/cmd/genkey
         ./l2
+	./gcp
+		
 
 )

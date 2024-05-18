@@ -11,6 +11,7 @@ require (
 )
 
 require (
+	bc v0.0.0-00010101000000-000000000000 // indirect
 	cloud.google.com/go v0.112.1 // indirect
 	cloud.google.com/go/compute v1.25.0 // indirect
 	cloud.google.com/go/compute/metadata v0.2.3 // indirect
@@ -18,6 +19,8 @@ require (
 	cloud.google.com/go/longrunning v0.5.5 // indirect
 	cloud.google.com/go/storage v1.39.1 // indirect
 	github.com/MicahParks/keyfunc v1.9.0 // indirect
+	github.com/cometbft/cometbft v0.38.5 // indirect
+	github.com/docker/go v1.5.1-1 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
 	github.com/go-logr/logr v1.4.1 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
@@ -49,4 +52,18 @@ require (
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240311173647-c811ad7063a7 // indirect
 	google.golang.org/grpc v1.62.1 // indirect
 	google.golang.org/protobuf v1.33.0 // indirect
+	gopkg.in/square/go-jose.v2 v2.6.0 // indirect
+)
+
+require (
+	merkle v0.0.0
+	qz v0.0.0
+	digicon v0.0.0
+)
+
+replace (
+	bc => ../bc
+	merkle => ../merkle
+	qz => ../qz
+	digicon => ../digicon
 )

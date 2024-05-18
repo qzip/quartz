@@ -12,31 +12,31 @@ import (
 	"cloud.google.com/go/pubsub"
 )
 
-//QueueMsgProcessorFactory send message from queue to contract chain
+// QueueMsgProcessorFactory send message from queue to contract chain
 type QueueMsgProcessorFactory struct {
 }
 
-//TransformMessage  transforms message to transaction logs
+// TransformMessage  transforms message to transaction logs
 type TransformMessage interface {
 	Transform(msg *pubsub.Message) (out *imle.MerkleDataLog, err error)
 }
 
-//MerkleDataLogSaver helper component should implement this interface
+// MerkleDataLogSaver helper component should implement this interface
 type MerkleDataLogSaver interface {
 	SaveMerkleDataLog(*imle.MerkleDataLog) error
 }
 
-//MerkleProofPublisher helper component should implement this interface
+// MerkleProofPublisher helper component should implement this interface
 type MerkleProofPublisher interface {
 	PublishMerkleProof(rootHash []byte, proofs map[string]*merkle.SimpleProof, keys []string) error
 }
 
-//Closable if a helper implements this inteface the parent close method will Close children also
+// Closable if a helper implements this inteface the parent close method will Close children also
 type Closable interface {
 	Close(context.Context)
 }
 
-//MsgConsumer the helper that runs the message consumer pipeline
+// MsgConsumer the helper that runs the message consumer pipeline
 type MsgConsumer struct {
 	contextKeys          CfgQueueMsgProcessorFactory
 	TransformMessage     TransformMessage
@@ -44,14 +44,14 @@ type MsgConsumer struct {
 	MerkleProofPublisher MerkleProofPublisher
 }
 
-//CfgQueueMsgProcessorFactory pipleine context keys
+// CfgQueueMsgProcessorFactory pipleine context keys
 type CfgQueueMsgProcessorFactory struct {
 	TransformMessageKey     string `json:"transformMessageKey"`
 	MerkleDataLogSaverKey   string `json:"merkleDataLogSaverKey"`
 	MerkleProofPublisherKey string `json:"merkleProofPublisher,omitempty"`
 }
 
-//CreateHelper implements Helper Factory method
+// CreateHelper implements Helper Factory method
 func (q2c *QueueMsgProcessorFactory) CreateHelper(ctx context.Context, param interface{}, cfg map[string]interface{}) (helper interface{}, err error) {
 	by, err := json.Marshal(param)
 	if err != nil {
@@ -66,12 +66,12 @@ func (q2c *QueueMsgProcessorFactory) CreateHelper(ctx context.Context, param int
 	return
 }
 
-//Consume implements MsgConsumerHelper method
+// Consume implements MsgConsumerHelper method
 func (mc *MsgConsumer) Consume(ctx context.Context, m *pubsub.Message) error {
 	return nil
 }
 
-//Open implements MsgConsumerHelper method
+// Open implements MsgConsumerHelper method
 func (mc *MsgConsumer) Open(ctx context.Context) error {
 	helper := ctx.Value(mc.contextKeys.TransformMessageKey)
 
@@ -111,19 +111,19 @@ func (mc *MsgConsumer) Open(ctx context.Context) error {
 	return nil
 }
 
-//Close implements MsgConsumerHelper method
+// Close implements MsgConsumerHelper method
 func (mc *MsgConsumer) Close(ctx context.Context) {
-	return
+
 }
 
 // component methods
 
-//Name to register in the component registry
+// Name to register in the component registry
 func (q2c *QueueMsgProcessorFactory) Name() string {
 	return "helpers.FlMsgProcessorFactory"
 }
 
-//Help return help string
+// Help return help string
 func (q2c *QueueMsgProcessorFactory) Help() string {
 	return `
 	  

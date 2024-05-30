@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"qz/commands"
 	"qz/dsl"
@@ -15,11 +14,11 @@ import (
 	"strings"
 )
 
-//DslFile2Json check syntax of a DSL File
+// DslFile2Json check syntax of a DSL File
 type DslFile2Json struct {
 }
 
-//Help implements Commander interface method
+// Help implements Commander interface method
 func (bi *DslFile2Json) Help() string {
 	return `
 	  # test the DSL parser
@@ -36,7 +35,7 @@ func (bi *DslFile2Json) Name() string {
 	return "cmd.DslFile2Json"
 }
 
-//Exec parses the DSL file & converts to JSON
+// Exec parses the DSL file & converts to JSON
 func (bi *DslFile2Json) Exec(ctx context.Context, cfg map[string]interface{}, errChan chan error) {
 	util.DebugInfo(ctx, "DslFile2Json.Exec: enter")
 	dslFname, ok := cfg["dsl"]
@@ -46,7 +45,7 @@ func (bi *DslFile2Json) Exec(ctx context.Context, cfg map[string]interface{}, er
 	}
 	fl := fmt.Sprintf("%v", dslFname)
 	util.DebugInfo(ctx, fmt.Sprintf("DslFile2Json.Exec: dsl file : %v\n", fl))
-	fbuf, err := ioutil.ReadFile(fl)
+	fbuf, err := os.ReadFile(fl)
 	if err != nil {
 		util.DebugInfo(ctx, err.Error())
 		errChan <- commands.NewFatalError(err.Error() + "\n")
@@ -82,12 +81,12 @@ func (bi *DslFile2Json) Exec(ctx context.Context, cfg map[string]interface{}, er
 	}
 }
 
-//ComponentType implements Component interface method
+// ComponentType implements Component interface method
 func (bi *DslFile2Json) ComponentType() reflect.Type {
 	return reflect.TypeOf(bi)
 }
 
-//FPrintBlocks prints the Block array in json format
+// FPrintBlocks prints the Block array in json format
 func FPrintBlocks(ctx context.Context, w io.Writer, dat []dsl.Block) error {
 	p, err := json.MarshalIndent(dat, "\n", " ")
 	if err != nil {
@@ -108,6 +107,7 @@ func FPrintBlocks(ctx context.Context, w io.Writer, dat []dsl.Block) error {
 	return nil
 }
 
+/*
 func customPrint(blk *dsl.Block) string {
 	var b bytes.Buffer
 	b.WriteString("\n{") // start
@@ -136,3 +136,4 @@ func customPrint(blk *dsl.Block) string {
 	b.WriteString("\n}\n") // end block
 	return b.String()
 }
+*/

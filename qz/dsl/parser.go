@@ -48,9 +48,9 @@ func NewParser(in io.Reader) *Parser {
 func (p *Parser) Parse(ctx context.Context) ([]Block, error) {
 	p.multiLine = nil
 	for p.curLine = 1; ; p.curLine++ {
-		ln, err := p.in.ReadString('\n')
-		if ln != "" {
-			ln = strings.TrimSpace(ln)
+		lnr, err := p.in.ReadString('\n')
+		if lnr != "" {
+			ln := strings.TrimSpace(lnr)
 			if strings.HasPrefix(ln, Comment) {
 				continue
 			}
@@ -89,7 +89,7 @@ func (p *Parser) Parse(ctx context.Context) ([]Block, error) {
 				}
 			default:
 				//util.DebugInfo(ctx, "Parse:  DEFAULT")
-				p.appendLine(ctx, ln)
+				p.appendLine(ctx, lnr)
 			}
 
 		}

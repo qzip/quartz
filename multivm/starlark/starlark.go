@@ -15,6 +15,8 @@ package starlark
 */
 import (
 	"context"
+	"fmt"
+	"os"
 	"qz/commands"
 
 	"qz/util"
@@ -22,6 +24,7 @@ import (
 	"go.starlark.net/repl"
 	"go.starlark.net/starlark"
 	"go.starlark.net/starlarkstruct"
+	"golang.org/x/term"
 )
 
 func init() {
@@ -61,13 +64,31 @@ func (vs *VmStarlark) Exec(ctx context.Context, cfg map[string]interface{}, errC
 
 	// execute
 	var err error
-	src := cfg[commands.CmdVmSource]
-	filename := cfg[commands.CmdFileName].(string)
-	vs.globals, err = starlark.ExecFile(vs.thread, filename, src, nil)
-	if err != nil {
-		util.DebugInfo(ctx, err.Error())
-		errChan <- err
+	replx := false
+	src, ok := cfg[commands.CmdVmSource]
+	if !ok {
+		replx = true
 	}
+	filename := cfg[commands.CmdFileName].(string)
+	if replx {
+		filename = "cmdline"
+		stdinIsTerminal := term.IsTerminal(int(os.Stdin.Fd()))
+		if stdinIsTerminal {
+			fmt.Println("Welcome to Starlark (go.starlark.net)")
+		}
+		vs.thread.Name = "REPL"
+		repl.REPL(vs.thread, vs.globals)
+		if stdinIsTerminal {
+			fmt.Println()
+		}
+	} else {
+		vs.globals, err = starlark.ExecFile(vs.thread, filename, src, nil)
+		if err != nil {
+			util.DebugInfo(ctx, err.Error())
+			errChan <- err
+		}
+	}
+
 }
 
 type StarlarkModule interface {

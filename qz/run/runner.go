@@ -22,7 +22,9 @@ func RunEmbeded(jsonb []byte) {
 	}
 	run(cfg)
 }
-
+func Run(cfg map[string]interface{}) {
+	run(cfg)
+}
 func run(cfg map[string]interface{}) {
 
 	cmd := fmt.Sprintf("%v", cfg[commands.CmdKey])
@@ -74,6 +76,9 @@ func Runner(cfgFile string) {
 		return
 	}
 	run(cfg)
+}
+func ReadConfig(fname string) (cfg map[string]interface{}, err error) {
+	return readCfg(fname)
 }
 
 func readCfg(fname string) (cfg map[string]interface{}, err error) {

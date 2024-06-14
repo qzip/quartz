@@ -70,7 +70,7 @@ func run(cfg map[string]interface{}) {
 
 func Runner(cfgFile string) {
 
-	cfg, err := readCfg(os.Args[1])
+	cfg, err := readCfg(cfgFile)
 	if err != nil {
 		log.Fatal(fmt.Errorf("main.readCfg: %s", err.Error()))
 		return

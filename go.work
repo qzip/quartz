@@ -14,6 +14,6 @@ use (
         //./l2/algorand/cmd/genkey
     ./l2
 	./gcp
-		
+	./multivm	
 
 )

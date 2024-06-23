@@ -70,8 +70,9 @@ func (vs *VmStarlark) Exec(ctx context.Context, cfg map[string]interface{}, errC
 		replx = true
 	}
 	cmdf := cfg[commands.CmdFileName]
+	filename := ""
 	if cmdf != nil {
-		filename := cmdf.(string)
+		filename = cmdf.(string)
 	}
 
 	if replx {

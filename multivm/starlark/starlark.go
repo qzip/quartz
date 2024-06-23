@@ -69,7 +69,11 @@ func (vs *VmStarlark) Exec(ctx context.Context, cfg map[string]interface{}, errC
 	if !ok {
 		replx = true
 	}
-	filename := cfg[commands.CmdFileName].(string)
+	cmdf := cfg[commands.CmdFileName]
+	if cmdf != nil {
+		filename := cmdf.(string)
+	}
+
 	if replx {
 		filename = "cmdline"
 		stdinIsTerminal := term.IsTerminal(int(os.Stdin.Fd()))

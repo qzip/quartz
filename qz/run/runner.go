@@ -50,6 +50,7 @@ func run(cfg map[string]interface{}) {
 				util.DebugInfo(ctx, "main: ctx done")
 				return // for
 			case err := <-errChan:
+				fmt.Println(err.Error())
 				util.DebugInfo(ctx, err.Error())
 				if _, ok := err.(commands.FatalError); ok {
 					cancel()

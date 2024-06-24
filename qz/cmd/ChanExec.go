@@ -13,6 +13,7 @@ import (
 	"context"
 	"fmt"
 	"qz/commands"
+	"qz/util"
 	"reflect"
 	"sync"
 )
@@ -33,16 +34,21 @@ const (
 // Exec implements qz/commands.Commander Exec method. Creates channel driven pipeline
 func (e *ChanExec) Exec(ctx context.Context, cfg map[string]interface{}, errCh chan error) {
 	var ok bool
+	util.DebugInfo(ctx, "cmd.ExecChan.Exec: entered")
 
 	if hlp, err := e.getHelper(ctx, cfg, sourceKey); err != nil {
+		util.DebugInfo(ctx, "cmd.ExecChan.Exec: "+err.Error())
 		errCh <- commands.NewFatalError(err.Error())
 		return
 	} else if e.source, ok = hlp.(commands.Source); !ok {
-		errCh <- commands.NewFatalError("cmd.ChanExec.Exec: helper not of type commands.Source")
+		emsg := "cmd.ChanExec.Exec: helper not of type commands.Source"
+		util.DebugInfo(ctx, "cmd.ExecChan: "+emsg)
+		errCh <- commands.NewFatalError(emsg)
 		return
 	}
 
 	if hlp, err := e.getHelper(ctx, cfg, sinkKey); err != nil {
+		util.DebugInfo(ctx, "cmd.ExecChan.Exec: "+err.Error())
 		errCh <- commands.NewFatalError(err.Error())
 		return
 	} else if e.sink, ok = hlp.(commands.Sink); !ok {

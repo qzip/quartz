@@ -1,6 +1,6 @@
 module digicon
 
-go 1.22.1
+go 1.22.0
 
 require (
 	github.com/docker/go v1.5.1-1

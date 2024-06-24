@@ -1,6 +1,6 @@
 module fi
 
-go 1.22.1
+go 1.22.0
 
 require (
 	github.com/alecthomas/jsonschema v0.0.0-20210301060011-54c507b6f074

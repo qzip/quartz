@@ -1,6 +1,6 @@
 module l2
 
-go 1.22.1
+go 1.22.0
 
 require (
 	github.com/algorand/go-algorand-sdk v1.24.0

@@ -8,7 +8,6 @@ use (
 	./jshttp
 	./latte
 	./merkle
-	./multivm
 	./qz
 	./shake
         //./l2/algorand/cmd/genkey

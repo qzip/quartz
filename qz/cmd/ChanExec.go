@@ -116,7 +116,7 @@ func (e *ChanExec) spinOff(ctx context.Context, errCh chan error) {
 
 	var wg sync.WaitGroup
 	f := func(p commands.Pipeline) {
-		p.Process(cctx)
+		p.Process(ctx)
 		wg.Done()
 	}
 	wg.Add(2)

@@ -77,7 +77,9 @@ func (e *ChanExec) Exec(ctx context.Context, cfg map[string]interface{}, errCh c
 
 		}
 	}
+	util.DebugInfo(ctx, "cmd.ExecChan.Exec: before spinoff")
 	e.spinOff(ctx, errCh)
+	util.DebugInfo(ctx, "cmd.ExecChan.Exec: after spinoff")
 }
 
 func (e *ChanExec) spinOff(ctx context.Context, errCh chan error) {
@@ -101,7 +103,9 @@ func (e *ChanExec) spinOff(ctx context.Context, errCh chan error) {
 		wg.Add(1)
 		go f(t)
 	}
+	util.DebugInfo(ctx, "cmd.ExecChan.spinoff: before wait")
 	wg.Wait()
+	util.DebugInfo(ctx, "cmd.ExecChan.spinoff: after wait")
 
 }
 

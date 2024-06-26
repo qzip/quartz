@@ -11,6 +11,7 @@ package cmd
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"qz/commands"
 	"qz/util"
@@ -60,31 +61,45 @@ func (e *ChanExec) Exec(ctx context.Context, cfg map[string]interface{}, errCh c
 
 	// deserialize the transformer array, transformers are optional
 	tarrKey, ok := cfg[transformersKey]
+	var tarr []string
 	if ok {
-		tarr, ok := tarrKey.([]string)
-		if !ok {
-			erf := commands.NewFatalError("cmd.ChanExec.Exec: transformer key [" + transformersKey + "] string array expected")
+		if tarrKey != nil {
+			if by, err := json.Marshal(tarrKey); err != nil {
+				util.DebugInfo(ctx, err.Error())
+				errCh <- err
+				return
+			} else {
+				if err = json.Unmarshal(by, &tarr); err != nil {
+					util.DebugInfo(ctx, err.Error())
+					errCh <- err
+					return
+				}
+			}
+		}
+	} else if !ok {
+		erf := commands.NewFatalError("cmd.ChanExec.Exec: transformer key [" + transformersKey + "] string array expected")
+		util.DebugInfo(ctx, erf.Error())
+		errCh <- erf
+		return
+	}
+
+	e.transformers = make([]commands.Transformer, len(tarr))
+	for i, t := range tarr {
+
+		if handler, err := e.getHelper(ctx, cfg, t); err != nil {
+			erf := commands.NewFatalError("cmd.ChanExec.Exec: helper not of type commands.Transformer array")
+			util.DebugInfo(ctx, erf.Error())
+			errCh <- erf
+			return
+		} else if e.transformers[i], ok = handler.(commands.Transformer); !ok {
+			erf := commands.NewFatalError("cmd.ChanExec.Exec: helper not of type commands.Transformer array")
 			util.DebugInfo(ctx, erf.Error())
 			errCh <- erf
 			return
 		}
-		e.transformers = make([]commands.Transformer, len(tarr))
-		for i, t := range tarr {
 
-			if handler, err := e.getHelper(ctx, cfg, t); err != nil {
-				erf := commands.NewFatalError("cmd.ChanExec.Exec: helper not of type commands.Transformer array")
-				util.DebugInfo(ctx, erf.Error())
-				errCh <- erf
-				return
-			} else if e.transformers[i], ok = handler.(commands.Transformer); !ok {
-				erf := commands.NewFatalError("cmd.ChanExec.Exec: helper not of type commands.Transformer array")
-				util.DebugInfo(ctx, erf.Error())
-				errCh <- erf
-				return
-			}
-
-		}
 	}
+
 	util.DebugInfo(ctx, "cmd.ExecChan.Exec: before spinoff")
 	e.spinOff(ctx, errCh)
 	util.DebugInfo(ctx, "cmd.ExecChan.Exec: after spinoff")

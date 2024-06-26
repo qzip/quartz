@@ -152,6 +152,7 @@ func (run *CommandRunner) Exec(pctx context.Context, cfg map[string]interface{},
 			return
 		case erx := <-errCh: // *TODO*: needed? fixit
 			fmt.Println(erx.Error())
+			util.DebugInfo(pctx, erx.Error())
 
 		case sig := <-sigs:
 			ferr := NewFatalError(sig.String())

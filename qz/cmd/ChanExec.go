@@ -86,13 +86,13 @@ func (e *ChanExec) Exec(ctx context.Context, cfg map[string]interface{}, errCh c
 	e.transformers = make([]commands.Transformer, len(tarr))
 	for i, t := range tarr {
 
-		if handler, err := e.getHelper(ctx, cfg, t); err != nil {
-			erf := commands.NewFatalError("cmd.ChanExec.Exec: helper not of type commands.Transformer array")
+		if handler := ctx.Value(t); handler == nil {
+			erf := commands.NewFatalError("cmd.ChanExec.Exec: helper [" + t + "  not found")
 			util.DebugInfo(ctx, erf.Error())
 			errCh <- erf
 			return
 		} else if e.transformers[i], ok = handler.(commands.Transformer); !ok {
-			erf := commands.NewFatalError("cmd.ChanExec.Exec: helper not of type commands.Transformer array")
+			erf := commands.NewFatalError("cmd.ChanExec.Exec: helper not of type commands.Transformer")
 			util.DebugInfo(ctx, erf.Error())
 			errCh <- erf
 			return

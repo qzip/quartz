@@ -150,7 +150,7 @@ func (run *CommandRunner) Exec(pctx context.Context, cfg map[string]interface{},
 		select {
 		case <-ctx.Done():
 			return
-		case erx := <-errCh: // *TODO*: needed? fixit
+		case erx := <-errCh: // *TODO*: needed? fixit runner.run() does this
 			fmt.Println(erx.Error())
 			util.DebugInfo(pctx, erx.Error())
 

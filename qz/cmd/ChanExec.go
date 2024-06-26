@@ -52,7 +52,9 @@ func (e *ChanExec) Exec(ctx context.Context, cfg map[string]interface{}, errCh c
 		errCh <- commands.NewFatalError(err.Error())
 		return
 	} else if e.sink, ok = hlp.(commands.Sink); !ok {
-		errCh <- commands.NewFatalError("cmd.ChanExec.Exec: helper not of type commands.Sink")
+		emsg := "cmd.ChanExec.Exec: helper not of type commands.Sink"
+		util.DebugInfo(ctx, emsg)
+		errCh <- commands.NewFatalError(emsg)
 		return
 	}
 
@@ -61,17 +63,23 @@ func (e *ChanExec) Exec(ctx context.Context, cfg map[string]interface{}, errCh c
 	if ok {
 		tarr, ok := tarrKey.([]string)
 		if !ok {
-			errCh <- commands.NewFatalError("cmd.ChanExec.Exec: transformer key [" + transformersKey + "] string array expected")
+			erf := commands.NewFatalError("cmd.ChanExec.Exec: transformer key [" + transformersKey + "] string array expected")
+			util.DebugInfo(ctx, erf.Error())
+			errCh <- erf
 			return
 		}
 		e.transformers = make([]commands.Transformer, len(tarr))
 		for i, t := range tarr {
 
 			if handler, err := e.getHelper(ctx, cfg, t); err != nil {
-				errCh <- commands.NewFatalError("cmd.ChanExec.Exec: helper not of type commands.Transformer array")
+				erf := commands.NewFatalError("cmd.ChanExec.Exec: helper not of type commands.Transformer array")
+				util.DebugInfo(ctx, erf.Error())
+				errCh <- erf
 				return
 			} else if e.transformers[i], ok = handler.(commands.Transformer); !ok {
-				errCh <- commands.NewFatalError("cmd.ChanExec.Exec: helper not of type commands.Transformer array")
+				erf := commands.NewFatalError("cmd.ChanExec.Exec: helper not of type commands.Transformer array")
+				util.DebugInfo(ctx, erf.Error())
+				errCh <- erf
 				return
 			}
 

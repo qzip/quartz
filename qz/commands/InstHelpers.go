@@ -52,7 +52,8 @@ func BuildCtxHandlers(ctx context.Context, cfg map[string]interface{}) (context.
 		if !ok || helperFact == nil {
 			return ctx, fmt.Errorf("commands.InstallGlobalHandlers: %v component is not of type commands.HelperFactory", cfa.Component)
 		}
-		// nuCtx is passed to createHelper() to facilitate creating Helper's helper
+
+		// avoid creating nested helpers as sequence is not gauranteed
 		helper, err := helperFact.CreateHelper(nuCtx, cfa.Param, cfg)
 		if err != nil {
 			util.DebugInfo(ctx, fmt.Sprintf("commands.InstallGlobalHandlers: error create helper %v %v\n", cfa.CtxName, err.Error()))

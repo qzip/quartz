@@ -16,16 +16,16 @@ import (
 	"reflect"
 )
 
-//HelperFactory component  extender
+// HelperFactory component  extender
 type HelperFactory interface {
 	ComponentFactory
 	CreateHelper(ctx context.Context, param interface{}, cfg map[string]interface{}) (interface{}, error)
 }
 
-//CfgHelpersKey Global Helpers key name in config
+// CfgHelpersKey Global Helpers key name in config
 var CfgHelpersKey = "helpers"
 
-//BuildCtxHandlers Install Listner Components
+// BuildCtxHandlers Install Listner Components
 // does not use err channel as it may not have been created at this point.
 func BuildCtxHandlers(ctx context.Context, cfg map[string]interface{}) (context.Context, error) {
 	lst, ok := cfg[CfgHelpersKey]
@@ -52,7 +52,8 @@ func BuildCtxHandlers(ctx context.Context, cfg map[string]interface{}) (context.
 		if !ok || helperFact == nil {
 			return ctx, fmt.Errorf("commands.InstallGlobalHandlers: %v component is not of type commands.HelperFactory", cfa.Component)
 		}
-		helper, err := helperFact.CreateHelper(ctx, cfa.Param, cfg)
+		// nuCtx is passed to createHelper() to facilitate creating Helper's helper
+		helper, err := helperFact.CreateHelper(nuCtx, cfa.Param, cfg)
 		if err != nil {
 			util.DebugInfo(ctx, fmt.Sprintf("commands.InstallGlobalHandlers: error create helper %v %v\n", cfa.CtxName, err.Error()))
 			return ctx, err

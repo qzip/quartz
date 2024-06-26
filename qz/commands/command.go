@@ -130,12 +130,16 @@ func (run *CommandRunner) Exec(pctx context.Context, cfg map[string]interface{},
 	util.DebugInfo(pctx, "CommandRunner.Exec: Exec start")
 	ctx, err := BuildCtxHandlers(pctx, cfg)
 	if err != nil {
-		errCh <- NewFatalError("CommandRunner.Exec(handlers): " + err.Error())
+		ferr := NewFatalError("CommandRunner.Exec(handlers): " + err.Error())
+		util.DebugInfo(pctx, ferr.Error())
+		errCh <- ferr
 		return
 	}
 	util.DebugInfo(pctx, "CommandRunner.Exec: BuildCtxHandlers done")
 	if err = InstallGlobalListners(ctx, cfg); err != nil {
-		errCh <- NewFatalError("CommandRunner.Exec(listeners): " + err.Error())
+		ferr := NewFatalError("CommandRunner.Exec(listeners): " + err.Error())
+		util.DebugInfo(pctx, ferr.Error())
+		errCh <- ferr
 		return
 	}
 	util.DebugInfo(pctx, "CommandRunner.Exec: InstallGlobalListners done")
@@ -147,7 +151,9 @@ func (run *CommandRunner) Exec(pctx context.Context, cfg map[string]interface{},
 		case <-ctx.Done():
 			return
 		case sig := <-sigs:
-			errCh <- NewFatalError(sig.String())
+			ferr := NewFatalError(sig.String())
+			util.DebugInfo(pctx, ferr.Error())
+			errCh <- ferr
 		}
 	}() // do not wait on this
 	run.Cmd.Exec(ctx, cfg, errCh)

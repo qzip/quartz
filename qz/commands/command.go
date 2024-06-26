@@ -150,6 +150,9 @@ func (run *CommandRunner) Exec(pctx context.Context, cfg map[string]interface{},
 		select {
 		case <-ctx.Done():
 			return
+		case erx := <-errCh:
+			fmt.Println(erx.Error())
+
 		case sig := <-sigs:
 			ferr := NewFatalError(sig.String())
 			util.DebugInfo(pctx, ferr.Error())

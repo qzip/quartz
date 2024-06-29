@@ -9,6 +9,8 @@ import (
 // DebugInfoCtxKey key to context
 var DebugInfoCtxKey = "debug"
 
+const DebugHandlerKey = "debugHandler"
+
 // Debug Global setting
 var Debug = true
 
@@ -19,10 +21,12 @@ type DebugInfoHandler interface {
 
 // DebugInfo : Call Debugger component if present
 func DebugInfo(ctx context.Context, msg string) {
-	if handler, ok := ctx.Value(DebugInfoCtxKey).(DebugInfoHandler); ok {
-		handler.Print(ctx, msg)
-	} else if Debug {
-		fmt.Println(time.Now(), msg)
+	if Debug {
+		if handler, ok := ctx.Value(DebugHandlerKey).(DebugInfoHandler); ok {
+			handler.Print(ctx, msg)
+		} else {
+			fmt.Println(time.Now(), msg)
+		}
 	}
 }
 

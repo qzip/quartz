@@ -131,8 +131,10 @@ func (e *ChanExec) spinOff(ctx context.Context, errCh chan error) {
 		select {
 		case <-ctx.Done():
 			cancel()
+			wg.Done()
 			return
 		case <-cctx.Done():
+			wg.Done()
 			return
 		}
 	}()

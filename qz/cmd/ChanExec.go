@@ -126,6 +126,16 @@ func (e *ChanExec) spinOff(ctx context.Context, errCh chan error) {
 		wg.Add(1)
 		go f(t)
 	}
+	wg.Add(1)
+	go func() {
+		select {
+		case <-ctx.Done():
+			cancel()
+			return
+		case <-cctx.Done():
+			return
+		}
+	}()
 	util.DebugInfo(ctx, "cmd.ExecChan.spinoff: before wait")
 	wg.Wait()
 	util.DebugInfo(ctx, "cmd.ExecChan.spinoff: after wait")

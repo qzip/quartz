@@ -6,21 +6,20 @@ The Golang Component Framework is a powerful and flexible framework for building
 
 == Features
 
-* **Modularity**: The framework promotes a modular architecture, allowing developers to break down their applications into reusable and independent components. This enables better code organization and easier maintenance.
+. **Modularity**: The framework promotes a modular architecture, allowing developers to break down their applications into reusable and independent components. This enables better code organization and easier maintenance.
 
-* **Dependency Injection**: The framework supports dependency injection, making it easy to manage and inject dependencies between components. This helps to decouple different parts of the application and improves testability.
+. **Dependency Injection**: The framework supports dependency injection, making it easy to manage and inject dependencies between components. This helps to decouple different parts of the application and improves testability.
 
-* **Lifecycle Management**: The framework provides a lifecycle management mechanism, allowing components to be initialized, started, stopped, and destroyed in a controlled manner. This ensures proper resource management and graceful shutdown of the application.
+. **Lifecycle Management**: The framework provides a lifecycle management mechanism, allowing components to be initialized, started, stopped, and destroyed in a controlled manner. This ensures proper resource management and graceful shutdown of the application.
 
-* **Event-driven Programming**: The framework includes an event system that facilitates communication and coordination between components. Components can publish and subscribe to events, enabling loose coupling and asynchronous communication.
+. **Event-driven Programming**: The framework includes an event system that facilitates communication and coordination between components. Components can publish and subscribe to events, enabling loose coupling and asynchronous communication.
 
-* **Configuration Management**: The framework offers a flexible configuration management mechanism, allowing developers to easily configure and customize the behavior of their components. This simplifies the deployment and configuration of applications.
+. **Configuration Management**: The framework offers a flexible configuration management mechanism, allowing developers to easily configure and customize the behavior of their components. This simplifies the deployment and configuration of applications.
 
 
 
 *NOTE* : `bc` is extracted from `qz` as a light weight stand alone component.
 
-**TODO** : remove `blockchain` and `cas` from `qz`.
 
 
 

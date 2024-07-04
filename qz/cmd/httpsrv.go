@@ -85,6 +85,13 @@ const (
 	paramDomain      = "domain"
 )
 
+// MuxInstaller is required because, creating handlers within a handler installed will result in error
+//
+//	because map[key]value order is not guranteed.
+type MuxInstaller interface {
+	InstallMux(ctx context.Context) (http.Handler, error)
+}
+
 // Exec Executes the configuration dynamically from db
 func (srv *SrvHTTP) Exec(ctx context.Context, cfg map[string]interface{}, errCh chan error) {
 	// load http handler factory
@@ -98,11 +105,23 @@ func (srv *SrvHTTP) Exec(ctx context.Context, cfg map[string]interface{}, errCh 
 		errCh <- commands.NewFatalError("cmd.SrvHTTP.Exec: ctx helper " + key + " not found")
 		return
 	}
-	mux, ok := handler.(http.Handler)
-	if !ok {
-		errCh <- commands.NewFatalError("cmd.SrvHTTP.Exec: ctx helper " + key + " not an instance of http.Handler")
-		return
+	var mux http.Handler
+	muxer, ok := handler.(MuxInstaller)
+	if ok {
+		if mux, err = muxer.InstallMux(ctx); err != nil {
+			errCh <- commands.NewFatalError("cmd.SrvHTTP.Exec: Mux  " + key + "  helper error [" + err.Error() + "]")
+			return
+		}
+	} else {
+
+		mux, ok = handler.(http.Handler)
+		if !ok {
+			errCh <- commands.NewFatalError("cmd.SrvHTTP.Exec: ctx helper " + key + " not an instance of http.Handler")
+			return
+		}
+
 	}
+
 	port := 7070
 	sport := os.Getenv("PORT") // for cloud run compatibility
 	if sport != "" {

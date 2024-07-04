@@ -23,6 +23,7 @@ import (
 
 // BasicMuxHTTP implements qz/commands.HelperFactory
 type BasicMuxHTTP struct {
+	param interface{}
 }
 
 // Name implements qz/commands.HelperFactory
@@ -48,13 +49,17 @@ func (mh *BasicMuxHTTP) ComponentType() reflect.Type {
 // CreateHelper returns http.Handler implements qz/commands.HelperFactory.
 // returns instance of http.Handler
 func (mh *BasicMuxHTTP) CreateHelper(ctx context.Context, param interface{}, cfg map[string]interface{}) (mux interface{}, err error) {
+	mh.param = param
+	return mh, nil
+}
+
+func (mh *BasicMuxHTTP) InstallMux(ctx context.Context) (http.Handler, error) {
 	m := http.NewServeMux()
-	err = mh.installMux(ctx, m, param)
+	err := mh.installMux(ctx, m, mh.param)
 	if err != nil {
-		return
+		return nil, err
 	}
-	mux = m
-	return
+	return m, nil
 }
 
 // installMux installs the handlers in the mux, its expectes the param to be a map[string]string

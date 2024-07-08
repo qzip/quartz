@@ -7,7 +7,7 @@ Author: Ashish Banerjee, <ashish@qzip.in>
 
 */
 
-//Package jwx handles JWT http(s) authentication
+// Package jwx handles JWT http(s) authentication
 package jwx
 
 import (
@@ -27,8 +27,27 @@ type JwtAuthorization interface {
 	JwtPubKeys() *jwt.KeyRegister
 }
 
+// SetJwtWrapper JWT auth & role wrapper
+func SetJwtWrapper(comp *JwtHandler, jwtAuth JwtAuthorization) {
+
+	roleFunc := &JwtRolesHandler{
+		jwtAuthorization: jwtAuth,
+	}
+	comp.Keys = jwtAuth.JwtPubKeys()
+	comp.HeaderBinding = map[string]string{
+		"sub": "X-Verified-User",   // registered [standard] claim
+		"iss": "X-Verified-Issuer", // private [custom] claim
+	}
+	comp.Func = roleFunc.CheckRoleAuthorization
+
+	// TODO: decide upon Func func(http.ResponseWriter, *http.Request, *Claims) (pass bool)
+	// see: https://github.com/pascaldekloe/jwt/blob/master/web.go
+	// see: https://play.golang.org/p/k_TF_54oJPX
+	// the func checks if the caller's role allows
+}
+
 // NewJwtWrapper JWT auth & role wrapper
-func NewJwtWrapper(jwtAuth JwtAuthorization, targetHandler http.Handler) http.Handler {
+func NewJwtWrapTarget(jwtAuth JwtAuthorization, targetHandler http.Handler) http.Handler {
 
 	roleFunc := &JwtRolesHandler{
 		jwtAuthorization: jwtAuth,
@@ -137,11 +156,13 @@ type JwtRolesHandler struct {
 }
 
 // CheckRoleAuthorization for a given jwt id can it authorize a set of roles?
-//
 func (jf *JwtRolesHandler) CheckRoleAuthorization(w http.ResponseWriter, req *http.Request, claims *jwt.Claims) (pass bool) {
 	//log.Printf("got a valid JWT %q for %q", claims.ID, claims.Audiences)
 
-	ok := jf.jwtAuthorization.ValidAudience(claims.Audiences)
+	if ok := jf.jwtAuthorization.ValidAudience(claims.Audiences); !ok {
+		http.Error(w, "jwt: invalid claim audiences", http.StatusForbidden)
+		return false
+	}
 	iroles, ok := claims.Set["roles"]
 	if !ok {
 		http.Error(w, "jwt: roles not set", http.StatusForbidden)

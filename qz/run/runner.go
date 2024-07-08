@@ -53,11 +53,13 @@ func run(cfg map[string]interface{}) {
 				fmt.Println(err.Error())
 				util.DebugInfo(ctx, err.Error())
 				if _, ok := err.(commands.FatalError); ok {
-					time.Sleep(1 * time.Second)
+					//time.Sleep(1 * time.Second)
 					cancel()
 					fmt.Println("main: after calling cancel, sleep 2 sec")
 					time.Sleep(1 * time.Second)
 					event.GlobalEventBus.Publish(ctx, &event.ExitEvent{Err: err})
+					time.Sleep(1 * time.Second)
+					log.Fatal(err)
 					return
 				}
 			}

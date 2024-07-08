@@ -26,13 +26,14 @@ type HelperFactory interface {
 var CfgHelpersKey = "helpers"
 
 type PostInstall interface {
-	InstallChildren(ctx context.Context, param interface{}) error
+	InstallChildren(ctx context.Context, helper interface{}, param interface{}) error
 }
 
 // PostInstaller supports recursive helper installers as order of install is not guarnteed
 type PostInstaller struct {
 	postInstaller PostInstall
 	param         interface{}
+	helper        interface{} // needed to ensure helper factory can be reused multiple times
 }
 
 // BuildCtxHandlers Install Listner Components
@@ -64,15 +65,16 @@ func BuildCtxHandlers(ctx context.Context, cfg map[string]interface{}) (context.
 		if !ok || helperFact == nil {
 			return ctx, fmt.Errorf("commands.InstallGlobalHandlers: %v component is not of type commands.HelperFactory", cfa.Component)
 		}
-		if pi, ok := cf.(PostInstall); ok {
-			p := PostInstaller{postInstaller: pi, param: cfa.Param}
-			piArr = append(piArr, p)
-		}
+
 		// avoid creating nested helpers as sequence is not gauranteed
 		helper, err := helperFact.CreateHelper(nuCtx, cfa.Param, cfg)
 		if err != nil {
 			util.DebugInfo(ctx, fmt.Sprintf("commands.InstallGlobalHandlers: error create helper %v %v\n", cfa.CtxName, err.Error()))
 			return ctx, err
+		}
+		if pi, ok := cf.(PostInstall); ok {
+			p := PostInstaller{postInstaller: pi, param: cfa.Param, helper: helper}
+			piArr = append(piArr, p)
 		}
 		kv[cfa.CtxName] = helper
 		util.DebugInfo(ctx, fmt.Sprintf("Installed Helper: %v, %v\n", cfa.CtxName, helper))
@@ -80,7 +82,7 @@ func BuildCtxHandlers(ctx context.Context, cfg map[string]interface{}) (context.
 	} // for config factory array
 	if len(piArr) > 0 {
 		for _, pa := range piArr {
-			if err = pa.postInstaller.InstallChildren(nuCtx, pa.param); err != nil {
+			if err = pa.postInstaller.InstallChildren(nuCtx, pa.helper, pa.param); err != nil {
 				return nil, err
 			}
 		}

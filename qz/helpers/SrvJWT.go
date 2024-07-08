@@ -22,7 +22,6 @@ import (
 
 // SrvJWT implements qz/commands.HelperFactory
 type SrvJWT struct {
-	handler *jwx.JwtHandler
 }
 
 // SrvJWTConfig configuration
@@ -53,13 +52,16 @@ func (fs *SrvJWT) ComponentType() reflect.Type {
 
 // CreateHelper returns http.Handler implements qz/commands.HelperFactory.
 func (fs *SrvJWT) CreateHelper(_ context.Context, param interface{}, _ map[string]interface{}) (mux interface{}, err error) {
-	fs.handler = &jwx.JwtHandler{}
-	mux = fs.handler
+	mux = &jwx.JwtHandler{}
 	return
 }
 
-func (fs *SrvJWT) InstallChildren(ctx context.Context, param interface{}) error {
-
+func (fs *SrvJWT) InstallChildren(ctx context.Context, handler interface{}, param interface{}) error {
+	mux, ok := handler.(*jwx.JwtHandler)
+	if !ok {
+		err := commands.NewFatalError(fmt.Sprintf("helper.SrvJWT.CreateHelper: expected helper of type *jwx.JwtHandler but got %v", reflect.TypeOf(handler).String()))
+		return err
+	}
 	jwCfg, err := fs.getParams(param)
 	if err != nil {
 		return err
@@ -75,15 +77,15 @@ func (fs *SrvJWT) InstallChildren(ctx context.Context, param interface{}) error 
 		err = commands.NewFatalError(fmt.Sprintf("context  %v handler not in context", ctxName))
 		return err
 	}
-	handler, ok := handlerx.(http.Handler)
+	handlx, ok := handlerx.(http.Handler)
 	if !ok {
 		err = commands.NewFatalError(fmt.Sprintf("context  %v handler not of http.Handler type", ctxName))
 		return err
 	}
-	fs.handler.Target = handler
+	mux.Target = handlx
 	jwAuth, err := jwx.NewJwkAuth(&jwCfg.JwkAuth)
 	if err != nil {
-		jwx.SetJwtWrapper(fs.handler, jwAuth)
+		jwx.SetJwtWrapper(mux, jwAuth)
 	}
 
 	return err

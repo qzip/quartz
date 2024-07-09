@@ -23,7 +23,6 @@ import (
 
 // BasicMuxHTTP implements qz/commands.HelperFactory
 type BasicMuxHTTP struct {
-	param interface{}
 }
 
 // Name implements qz/commands.HelperFactory
@@ -49,17 +48,16 @@ func (mh *BasicMuxHTTP) ComponentType() reflect.Type {
 // CreateHelper returns http.Handler implements qz/commands.HelperFactory.
 // returns instance of http.Handler
 func (mh *BasicMuxHTTP) CreateHelper(ctx context.Context, param interface{}, cfg map[string]interface{}) (mux interface{}, err error) {
-	mh.param = param
-	return mh, nil
+	mux = http.NewServeMux()
+	return
 }
-
-func (mh *BasicMuxHTTP) InstallMux(ctx context.Context) (http.Handler, error) {
-	m := http.NewServeMux()
-	err := mh.installMux(ctx, m, mh.param)
-	if err != nil {
-		return nil, err
+func (mh *BasicMuxHTTP) InstallChildren(ctx context.Context, handler interface{}, param interface{}) error {
+	mux, ok := handler.(*http.ServeMux)
+	if !ok {
+		err := commands.NewFatalError(fmt.Sprintf("helper.BasicMuxHTTP.InstallChildren: expected helper of type *http.ServeMux but got %v", reflect.TypeOf(handler).String()))
+		return err
 	}
-	return m, nil
+	return mh.installMux(ctx, mux, param)
 }
 
 // installMux installs the handlers in the mux, its expectes the param to be a map[string]string

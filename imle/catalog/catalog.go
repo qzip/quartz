@@ -7,7 +7,7 @@ type Node struct {
 	Title        string    `json:"title"`
 	URL          string    `json:"url,omitempty"`
 	Tags         []Tag     `json:"tag,omitempty"`
-	Specs        ProdSpecs `json:"specs,omitempty"`
+	Product      ProdOffer `json:"product,omitempty"`
 }
 
 // Tag help in searching & filtering
@@ -18,8 +18,15 @@ type Tag struct {
 }
 
 type ProdSpecs struct {
-	Namespace        string                 `json:"ns"` // <domain>:<schema> , the last : defines schema
+	Namespace           string                 `json:"ns"` // <domain>:<schema> , the last : defines schema
+	W3cDid              string                 `json:"w3cdid"`
+	ProdSpecsAttributes map[string]interface{} `json:"attributes,omitempty"`
+	ComponentsW3cDid    []string               `json:"components,omitempty"`
+}
+
+type ProdOffer struct {
 	W3cDid           string                 `json:"w3cdid"`
 	ProdAttributes   map[string]interface{} `json:"attributes,omitempty"`
-	ComponentsW3cDid []string               `json:"components,omitempty"`
+	ComponentsW3cDid []string               `json:"components,omitempty"` // Offer has same fields as Specs, but different sematics/context values
+	SpecsW3cdid      string                 `json:"w3cdidSpecs"`
 }

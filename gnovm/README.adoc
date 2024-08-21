@@ -1,0 +1,50 @@
+= Gno VM Layer 2 (L2)
+
+*NOTE*: This `dir` is not under `l2` to avoid messing up with the `l2` dependencies. Also, `l2` contains notarization logic,
+whereas, `gnovm` has the VM + Dolt DB implementation. This also does not fit into the `multivm` framework, which is aligned with `qz` component framework.
+
+https://github.com/gnolang/gno/tree/master/gnovm[Gno VM] is being used as the L2 VM, and https://github.com/dolthub/dolt/[Dolt] as its state storage.
+
+The L2 assumption is that the consensus will happen by syncing the Dolt database. There will be few validators, and the consensus is PoA (Proof of Authority).
+
+No concept of having a token. Tokens if any, are placed in a L1 (Layer 1) blockchain.
+
+There is only one Dolt table `cas`, with namespace differenciation.
+
+== code groking
+`git@github.com:gnolang/gno.git` 
+
+`gnovm/pkg/gnolang/machine.go`  : NewMachine initializes a new gno virtual machine
+
+`gnovm/pkg/gnolang/machine_test.go`: see function `TestRunMemPackageWithOverrides_revertToOld` for database creation example.
+
+`tm2/pkg/db/memdb/mem_db.go` : memory database used in the above test.
+
+`tm2/pkg/db/goleveldb/go_level_db.go` : level db 
+
+`tm2/pkg/db/types.go` : defines interfaces for `DB`, `Batch` and `Iterator`
+
+`gnovm/pkg/gnolang/store.go`  : contains `Store` interface and default store implemenation.
+
+
+The `tm2/pkg/db/memdb/mem_db.go` defines memory store as:
+
+```go
+type MemDB struct {
+	mtx sync.Mutex
+	db  map[string][]byte
+}
+
+```
+
+The file `tm2/pkg/db/internal/mem_batch.go` implements `dbm.Batch` and the file `tm2/pkg/db/internal/mem_iterator.go` contains the  implementation of  `dbm.Iterator`, both these interfaces can be found in `tm2/pkg/db/types.go`
+
+```go
+type MemIterator struct {
+	db    db.DB
+	cur   int
+	keys  []string
+	start []byte
+	end   []byte
+}
+```

@@ -43,9 +43,9 @@ type SignedBlockChain struct {
 
 // Signature JWS of hashed data
 type Signature struct {
-	ContentHash cas.Hashable `json:"contentHash"` // for chain head it's chainhead hash
-	Jws         []byte       `json:"jws"`
-	JwkPub      []byte       `json:"jwk"`
+	ContentHash []byte `json:"contentHash"` // for chain head it's chainhead hash
+	Jws         []byte `json:"jws"`
+	JwkPub      []byte `json:"jwk"`
 }
 
 // SignedData Data + signature
@@ -58,40 +58,40 @@ type SignedData struct {
 
 // SigContent content of the signature
 type SigContent struct {
-	DataURI  string       `json:"dataURI"`
-	RefID    string       `json:"refID"`
-	FullHash cas.HashData `json:"fullHash"`
-	PartHash cas.HashData `json:"partHash,omitempty"`
-	Tmstamp  time.Time    `json:"tmstamp"`
+	DataURI  string    `json:"dataURI"`
+	RefID    string    `json:"refID"`
+	FullHash []byte    `json:"fullHash"`
+	PartHash []byte    `json:"partHash,omitempty"`
+	Tmstamp  time.Time `json:"tmstamp"`
 }
 
 // BlockChain memory representation of block that is signed and placed in Blockchain record
 type BlockChain struct {
-	ChainID       string       `json:"chainID"`
-	Height        int64        `json:"height"`
-	PrevChainHash cas.Hashable `json:"prevChainHash"` // genesis block previous hash is Hash(ChainID)
-	Nonce         string       `json:"nonce"`
-	Tmstamp       time.Time    `json:"tmstamp"`
-	TxnBlock      []BlockTxn   `json:"txnBlock"`
+	ChainID       string     `json:"chainID"`
+	Height        int64      `json:"height"`
+	PrevChainHash []byte     `json:"prevChainHash"` // genesis block previous hash is Hash(ChainID)
+	Nonce         string     `json:"nonce"`
+	Tmstamp       time.Time  `json:"tmstamp"`
+	TxnBlock      []BlockTxn `json:"txnBlock"`
 }
 
-//Hash implements merkle.Hasher interface
+// Hash implements merkle.Hasher interface
 // computes merkle root of the Block
 func (blk *BlockChain) Hash() []byte {
 	return merkle.SimpleHashFromMap(blk.MerkleHasher())
 }
 
-//MerkleProofs computes Hash & proof of array of TxnBlock(s)
+// MerkleProofs computes Hash & proof of array of TxnBlock(s)
 func (blk *BlockChain) MerkleProofs() (rootHash []byte, proofs map[string]*merkle.SimpleProof, keys []string) {
 	return merkle.SimpleProofsFromMap(blk.MerkleHasher())
 }
 
-//MerkleHasher transforms BlockTxn into merkle hasher map
+// MerkleHasher transforms BlockTxn into merkle hasher map
 func (blk *BlockChain) MerkleHasher() map[string]merkle.Hasher {
 	m := make(map[string]merkle.Hasher)
 	m["chainID"] = cas.NewHashData([]byte(blk.ChainID))
 	m["height"] = cas.NewHashData([]byte(fmt.Sprintf("%d", blk.Height)))
-	m["prevChainHash"] = blk.PrevChainHash
+	m["prevChainHash"] = cas.NewHashData(blk.PrevChainHash)
 	m["nonce"] = cas.NewHashData([]byte(blk.Nonce))
 	m["tmstamp"] = cas.NewHashData([]byte(blk.Tmstamp.String()))
 	m["txnBlock"] = cas.NewHashData([]byte(MerkleHashFromTxnBlocks(blk.TxnBlock)))
@@ -106,14 +106,14 @@ type BlockTxn struct {
 	TxnTmstamp time.Time    `json:"txnTmstamp"`
 }
 
-//Hash implements merkle.Hasher interface
+// Hash implements merkle.Hasher interface
 // computes merkle root of the BxnBlock param
 func (btx *BlockTxn) Hash() []byte {
 	return merkle.SimpleHashFromMap(btx.MerkleHasher())
 
 }
 
-//MerkleHasher transforms BlockTxn into merkle hasher map
+// MerkleHasher transforms BlockTxn into merkle hasher map
 func (btx *BlockTxn) MerkleHasher() map[string]merkle.Hasher {
 	m := make(map[string]merkle.Hasher)
 	m["txnRef"] = cas.NewHashData([]byte(btx.TxnRef))
@@ -123,7 +123,7 @@ func (btx *BlockTxn) MerkleHasher() map[string]merkle.Hasher {
 	return m
 }
 
-//MerkleProofsFromTxnBlocks computes Hash & proof of array of TxnBlock(s)
+// MerkleProofsFromTxnBlocks computes Hash & proof of array of TxnBlock(s)
 func MerkleProofsFromTxnBlocks(txnBlock []BlockTxn) (rootHash []byte, proofs []*merkle.SimpleProof) {
 	mhsh := make([]merkle.Hasher, len(txnBlock))
 	for i, t := range txnBlock {
@@ -132,7 +132,7 @@ func MerkleProofsFromTxnBlocks(txnBlock []BlockTxn) (rootHash []byte, proofs []*
 	return merkle.SimpleProofsFromHashers(mhsh)
 }
 
-//MerkleHashFromTxnBlocks computes Hash of array of TxnBlock(s)
+// MerkleHashFromTxnBlocks computes Hash of array of TxnBlock(s)
 func MerkleHashFromTxnBlocks(txnBlock []BlockTxn) []byte {
 	mhsh := make([]merkle.Hasher, len(txnBlock))
 	for i, t := range txnBlock {
@@ -143,7 +143,7 @@ func MerkleHashFromTxnBlocks(txnBlock []BlockTxn) []byte {
 
 // JSONCas Content Addressable Storage
 type JSONCas struct {
-	Hash      cas.Hashable           `json:"hash"`
+	Hash      []byte                 `json:"hash"`
 	ClassName string                 `json:"className"`
 	Data      map[string]interface{} `json:"data"`
 	Tmstamp   time.Time              `json:"tmstamp"`
@@ -192,7 +192,7 @@ func (bc *BlockCutter) Process(ctx context.Context) {
 		blk.TxnBlock = append(blk.TxnBlock, *txn)
 		if len(blk.TxnBlock) >= blksiz {
 			blk.Height = bc.Helper.ComputeNextHeight(ctx, bc.Err)
-			blk.PrevChainHash = bc.Helper.LastChainHash()
+			blk.PrevChainHash = bc.Helper.LastChainHash().Hash()
 			blk.ChainID = bc.Helper.ChainID()
 			blk.Tmstamp = time.Now()
 			bc.Out <- blk
@@ -201,7 +201,7 @@ func (bc *BlockCutter) Process(ctx context.Context) {
 	}
 	if len(blk.TxnBlock) > 0 {
 		blk.Height = bc.Helper.ComputeNextHeight(ctx, bc.Err)
-		blk.PrevChainHash = bc.Helper.LastChainHash()
+		blk.PrevChainHash = bc.Helper.LastChainHash().Hash()
 		blk.ChainID = bc.Helper.ChainID()
 		blk.Tmstamp = time.Now()
 		bc.Out <- blk

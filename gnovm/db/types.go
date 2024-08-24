@@ -1,5 +1,39 @@
 package db
 
+import (
+	"time"
+
+	bc "bc/blockchain"
+)
+
+/*
+		Assumes Table structure as :
+	    CREATE TABLE IF NOT EXISTS cas (
+			w3cdid	VARCHAR(512) NOT NULL PRIMARY KEY,
+			namespace	VARCHAR(512) DEFAULT ('com.aloagri.harvest2invoice'),
+			cas_data	JSON,
+			tmstamp	TIMESTAMP
+		);
+*/
+type DbCasSchema struct {
+	W3cDid    string      `json:"w3cdid"`
+	Namespace string      `json:"namespace"`
+	CasData   interface{} `json:"cas_data"`
+	Tmstamp   time.Time   `json:"tmstamp"`
+}
+
+type TxnQueue struct {
+	ChainID         string `json:"chainID"`
+	NextBlockHeight int    `json:"nextHeight"`
+	Validator       bc.Signature
+	Txn             []LogHash `json:"pendingTransactions"`
+}
+
+type LogHash []byte
+
+func (l *LogHash) Hash() []byte { return []byte(*l) }
+
+// copied from tm2/pkg/db/types.go
 // DBs are goroutine safe.
 type DB interface {
 	// Get returns nil iff key doesn't exist.

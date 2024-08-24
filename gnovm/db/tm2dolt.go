@@ -1,15 +1,56 @@
 package db
 
+import (
+	"database/sql"
+
+	_ "github.com/go-sql-driver/mysql"
+)
+
 const (
-	defaultCommitMsg    = "traceprod immutable ledger"
-	defaultCommitAuthor = "Quartz <tech@innomon.in>"
-	defaultCommitBranch = "main"
+	defaultCommitMsg     = "traceprod immutable ledger"
+	defaultCommitAuthor  = "Quartz <tech@innomon.in>"
+	defaultCommitBranch  = "main"
+	defaultMaxBlobLength = (1024 * 1024)     // 1Mb
+	defaultDbDomain      = "quartz.gnovm.db" //<domain>:<key>
 )
 
 // Tm2Dolt implements Tendermint2 Database, implements DB tm2/pkg/db/types.go
 // modelled on `tm2/pkg/db/memdb/mem_db.go`
 // stores in DoltDb `CAS` table
 type Tm2Dolt struct {
+	Param        *Tm2DoltParam
+	ErrorHandler func(error)
+	db           *sql.DB
+}
+
+type Tm2DoltParam struct {
+	DbConnection  string `json:"dbConnection"`
+	DbDomain      string `json:"dbDomain,omitempty"`
+	MaxBlobLength int    `json:"maxBlobLength,omitempty"`
+	CommitMsg     string `json:"commitMsg,omitempty"`
+	CommitAuthor  string `json:"commitAuthor,omitempty"`
+	CommitBranch  string `json:"commitBranch,omitempty"`
+}
+
+func (td *Tm2DoltParam) setDefaults() {
+
+}
+
+func NewTm2Dolt(param *Tm2DoltParam, errorHandler func(error)) (*Tm2Dolt, error) {
+	td := &Tm2Dolt{
+		Param:        param,
+		ErrorHandler: errorHandler,
+	}
+	param.setDefaults()
+	if err := td.open(); err != nil {
+		return nil, err
+	}
+	return td, nil
+}
+
+func (td *Tm2Dolt) open() error {
+
+	return nil
 }
 
 func (td *Tm2Dolt) Get(key []byte) []byte {

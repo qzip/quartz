@@ -48,6 +48,21 @@ type Signature struct {
 	JwkPub      []byte `json:"jwk"`
 }
 
+func (sig *Signature) Hash() []byte {
+	return merkle.SimpleHashFromMap(sig.MerkleHasher())
+}
+func (sig *Signature) MerkleHasher() map[string]merkle.Hasher {
+	m := make(map[string]merkle.Hasher)
+	m["contentHash"] = cas.NewHashData([]byte(sig.ContentHash))
+	m["jws"] = cas.NewHashData(sig.Jws)
+	m["jwk"] = cas.NewHashData(sig.JwkPub)
+	return m
+}
+
+func (sig *Signature) MerkleProofs() (rootHash []byte, proofs map[string]*merkle.SimpleProof, keys []string) {
+	return merkle.SimpleProofsFromMap(sig.MerkleHasher())
+}
+
 // SignedData Data + signature
 type SignedData struct {
 	Sig      Signature  `json:"signature"`

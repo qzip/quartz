@@ -1,9 +1,13 @@
 package db
 
 import (
+	"crypto/sha256"
+	"fmt"
+	"merkle"
 	"time"
 
 	bc "bc/blockchain"
+	"bc/cas"
 )
 
 /*
@@ -23,15 +27,32 @@ type DbCasSchema struct {
 }
 
 type TxnQueue struct {
-	ChainID         string `json:"chainID"`
-	NextBlockHeight int    `json:"nextHeight"`
-	Validator       bc.Signature
-	Txn             []LogHash `json:"pendingTransactions"`
+	ChainID         string       `json:"chainID"`
+	NextBlockHeight int          `json:"nextHeight"`
+	Validator       bc.Signature `json:"validator"`
+	Txn             []LogHash    `json:"pendingTransactions"`
 }
 
 type LogHash []byte
 
 func (l *LogHash) Hash() []byte { return []byte(*l) }
+
+func LogHashArray(logs []LogHash) []byte {
+	hash := sha256.New()
+	for _, i := range logs {
+		hash.Write([]byte(i))
+	}
+	return hash.Sum(nil)
+}
+
+func (tq *TxnQueue) MerkleHasher() map[string]merkle.Hasher {
+	m := make(map[string]merkle.Hasher)
+	m["chainID"] = cas.NewHashData([]byte(tq.ChainID))
+	m["nextHeight"] = cas.NewHashData([]byte(fmt.Sprintf("%d", tq.NextBlockHeight)))
+	m["validator"] = cas.NewHashData(tq.Validator.Hash())
+	m["pendingTransactions"] = cas.NewHashData(LogHashArray(tq.Txn))
+	return m
+}
 
 // copied from tm2/pkg/db/types.go
 // DBs are goroutine safe.

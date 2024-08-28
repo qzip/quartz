@@ -31,6 +31,7 @@ type TxnQueue struct {
 	NextBlockHeight int          `json:"nextHeight"`
 	Validator       bc.Signature `json:"validator"`
 	Txn             []LogHash    `json:"pendingTransactions"`
+	Tmstamp         time.Time    `json:"tmstamp"`
 }
 
 type LogHash []byte
@@ -51,6 +52,7 @@ func (tq *TxnQueue) MerkleHasher() map[string]merkle.Hasher {
 	m["nextHeight"] = cas.NewHashData([]byte(fmt.Sprintf("%d", tq.NextBlockHeight)))
 	m["validator"] = cas.NewHashData(tq.Validator.Hash())
 	m["pendingTransactions"] = cas.NewHashData(LogHashArray(tq.Txn))
+	m["tmstamp"] = cas.NewHashData(cas.TimeHasher(tq.Tmstamp))
 	return m
 }
 

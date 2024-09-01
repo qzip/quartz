@@ -23,4 +23,15 @@ The Golang Component Framework is a powerful and flexible framework for building
 
 
 
+== go Cross Compile
+
+https://www.digitalocean.com/community/tutorials/how-to-build-go-executables-for-multiple-platforms-on-ubuntu-16-04[blog]
+
+ env GOOS=target-OS GOARCH=target-architecture go build xxx
+ 
+ target-os: linux ; target-architecture: amd64, arm64
+ target-os: windows ; target-architecture: amd64, 386
+ 
+ env GOOS=linux GOARCH=amd64 
+ 
 

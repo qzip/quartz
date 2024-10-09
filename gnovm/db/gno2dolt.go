@@ -19,7 +19,7 @@ func (gds *GnoDoltStore) BeginTransaction(_, _ store.Store) gnovm.TransactionSto
 
 func (gds *GnoDoltStore) SetPackageGetter(pg gnovm.PackageGetter) {
 
-	return nil
+	return
 }
 
 func (gds *GnoDoltStore) GetPackage(pkgPath string, isImport bool) *gnovm.PackageValue {

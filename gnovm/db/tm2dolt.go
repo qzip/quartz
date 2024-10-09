@@ -19,7 +19,7 @@ const (
 // stores in DoltDb `CAS` table
 type Tm2Dolt struct {
 	Param        *Tm2DoltParam
-	ErrorHandler func(error)
+	ErrorHandler func(error) bool // if true ignore error
 	db           *sql.DB
 }
 
@@ -36,7 +36,7 @@ func (td *Tm2DoltParam) setDefaults() {
 
 }
 
-func NewTm2Dolt(param *Tm2DoltParam, errorHandler func(error)) (*Tm2Dolt, error) {
+func NewTm2Dolt(param *Tm2DoltParam, errorHandler func(error) bool) (*Tm2Dolt, error) {
 	td := &Tm2Dolt{
 		Param:        param,
 		ErrorHandler: errorHandler,

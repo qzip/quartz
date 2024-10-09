@@ -1,6 +1,7 @@
 package db
 
 import (
+	"database/sql"
 	"reflect"
 
 	gnovm "github.com/gnolang/gno/gnovm/pkg/gnolang"
@@ -10,8 +11,26 @@ import (
 
 // GnoDoltStore implements Store interface of gnovm/pkg/gnolang/store.go
 type GnoDoltStore struct {
+	Param        *Tm2DoltParam
+	ErrorHandler func(error) bool // if true ignore error
+	db           *sql.DB
 }
 
+func NewGnoDoltStore(param *Tm2DoltParam, errorHandler func(error) bool) (*GnoDoltStore, error) {
+	td := &GnoDoltStore{
+		Param:        param,
+		ErrorHandler: errorHandler,
+	}
+	param.setDefaults()
+	if err := td.open(); err != nil {
+		return nil, err
+	}
+	return td, nil
+}
+func (gds *GnoDoltStore) open() error {
+
+	return nil
+}
 func (gds *GnoDoltStore) BeginTransaction(_, _ store.Store) gnovm.TransactionStore {
 
 	return nil
@@ -154,4 +173,8 @@ func (gds *GnoDoltStore) ClearCache() {
 func (gds *GnoDoltStore) Print() {
 
 	return
+}
+
+func (gds *GnoDoltStore) Write() {
+
 }

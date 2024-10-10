@@ -1,6 +1,7 @@
 package db
 
 import (
+	"context"
 	"database/sql"
 	"reflect"
 
@@ -10,44 +11,118 @@ import (
 )
 
 // GnoDoltStore implements Store interface of gnovm/pkg/gnolang/store.go
+// does not supports nested transaction
 type GnoDoltStore struct {
 	Param        *Tm2DoltParam
 	ErrorHandler func(error) bool // if true ignore error
 	db           *sql.DB
+	ctx          context.Context // ideally context should not be stored, but gno store interface, does not support context
+	tx           *sql.Tx
+	pg           gnovm.PackageGetter
+	pkgCache     map[string]*gnovm.PackageValue
+	realmCache   map[string]*gnovm.Realm
 }
 
-func NewGnoDoltStore(param *Tm2DoltParam, errorHandler func(error) bool) (*GnoDoltStore, error) {
+func NewGnoDoltStore(ctx context.Context, param *Tm2DoltParam, errorHandler func(error) bool) (*GnoDoltStore, error) {
 	td := &GnoDoltStore{
 		Param:        param,
 		ErrorHandler: errorHandler,
+		ctx:          ctx,
+		pkgCache:     make(map[string]*gnovm.PackageValue),
+		realmCache:   make(map[string]*gnovm.Realm),
 	}
 	param.setDefaults()
 	if err := td.open(); err != nil {
 		return nil, err
 	}
+
+	go func() {
+		select {
+		case <-ctx.Done():
+			td.Close()
+			return
+		}
+
+	}()
+
 	return td, nil
 }
 func (gds *GnoDoltStore) open() error {
-
+	if gds.db != nil {
+		return nil
+	}
 	return nil
+}
+func (gds *GnoDoltStore) Close() {
+	if gds.tx != nil {
+		gds.tx.Rollback()
+		gds.tx = nil
+	}
+	if gds.db != nil {
+		gds.db.Close()
+		gds.db = nil
+	}
+
 }
 func (gds *GnoDoltStore) BeginTransaction(_, _ store.Store) gnovm.TransactionStore {
+	td := gds
+	if gds.tx == nil {
+		var err error
+		if gds.tx, err = gds.db.BeginTx(gds.ctx, nil); err != nil {
+			gds.ErrorHandler(err)
+			td = nil
+		}
+	} else {
+		if gd, err := NewGnoDoltStore(gds.ctx, gds.Param, gds.ErrorHandler); err == nil {
+			td = gd
+			if gd.tx, err = gd.db.BeginTx(gds.ctx, nil); err != nil {
+				gds.ErrorHandler(err)
+				td = nil
+			}
+		} else {
+			gds.ErrorHandler(err)
+			td = nil
+		}
 
-	return nil
+	}
+	return td
 }
-
+func (gds *GnoDoltStore) ensureTxn() *sql.Tx {
+	if gds.tx == nil {
+		var err error
+		if gds.tx, err = gds.db.BeginTx(gds.ctx, nil); err != nil {
+			gds.ErrorHandler(err)
+			return nil
+		}
+	}
+	return gds.tx
+}
 func (gds *GnoDoltStore) SetPackageGetter(pg gnovm.PackageGetter) {
-
+	gds.pg = pg
 	return
 }
 
-func (gds *GnoDoltStore) GetPackage(pkgPath string, isImport bool) *gnovm.PackageValue {
+func (gds *GnoDoltStore) GetPackage(pkgPath string, _ bool) *gnovm.PackageValue {
+	pv, ok := gds.pkgCache[pkgPath]
+	if ok {
+		return pv
+	}
+	if gds.pg != nil {
+		_, pv = gds.pg(pkgPath, gds)
+	}
+	if pv == nil {
+		pv = gds.getPackage(pkgPath)
+	}
+	return pv
+}
+
+func (gds *GnoDoltStore) getPackage(pkgPath string) (pv *gnovm.PackageValue) {
 
 	return nil
 }
 
-func (gds *GnoDoltStore) SetCachePackage(*gnovm.PackageValue) {
-
+func (gds *GnoDoltStore) SetCachePackage(pv *gnovm.PackageValue) {
+	gds.pkgCache[pv.PkgPath] = pv
 	return
 }
 

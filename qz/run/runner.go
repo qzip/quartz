@@ -68,7 +68,7 @@ func run(cfg map[string]interface{}) {
 	}()
 
 	run.Exec(ctx, cfg, errChan)
-	errChan <- commands.NewFatalError("OK: Exit runcmd")
+	//errChan <- commands.NewFatalError("OK: Exit runcmd")
 	util.DebugInfo(ctx, "qz: main ret")
 }
 
